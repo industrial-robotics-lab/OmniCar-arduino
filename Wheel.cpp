@@ -15,8 +15,20 @@ void Wheel::update() {
   encoder->update();
 }
 
+int Wheel::getEncPin() {
+  return encoder->pin;
+}
+
 float Wheel::getRPM() {
   return encoder->getRPM();
+}
+
+void Wheel::incEnc() {
+  encoder->increment();
+}
+
+void Wheel::setMotorValue(int value) {
+  motor->setValue(value);
 }
 
 void Wheel::reachVelocity(int desiredRPM) {
