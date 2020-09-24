@@ -13,6 +13,12 @@ void updateW3() { w3.incEnc(); }
 void updateW4() { w4.incEnc(); }
 
 int vel = 0;
+int u = 0;
+
+unsigned long now = 0;
+unsigned long prev = 0;
+unsigned long timer = 3000;
+bool state = false;
 
 void setup() {
   attachInterrupt(digitalPinToInterrupt(w1.getEncPin()), updateW1, RISING);
@@ -21,7 +27,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(w4.getEncPin()), updateW4, RISING);
   
   Serial.begin(9600);
-  Serial.setTimeout(1000);
+  Serial.setTimeout(100);
 }
 
 void userInput() {
@@ -35,15 +41,44 @@ void userInput() {
   }
 }
 
-void loop() {
-  userInput();
+void runMotors() {
   w1.update();
-  w2.update();
-  w3.update();
-  w4.update();
-  w1.setMotorValue(vel);
-  w2.setMotorValue(vel);
-  w3.setMotorValue(vel);
-  w4.setMotorValue(vel);
-//  Serial.println(w1.getRPM());
+  // w2.update();
+  // w3.update();
+  // w4.update();
+  u = w1.reachVelocity(vel);
+  // w2.setMotorValue(vel);
+  // w3.setMotorValue(vel);
+  // w4.setMotorValue(vel);
+}
+
+void sendData() {
+  Serial.print('$');
+  Serial.print(vel);
+  Serial.print(' ');
+  Serial.print(u);
+  Serial.print(' ');
+  Serial.print(w1.getRPM(), 2);
+  Serial.print(';');
+}
+
+void changeState() {
+  state = !state;
+  if(state) {
+    vel = 100;
+  } else {
+    vel = 0;
+  }
+}
+
+void loop() {
+  // userInput();
+  runMotors();
+  sendData();
+
+  now = millis();
+  if (now - prev > timer) {
+    prev = now;
+    changeState();
+  }
 }

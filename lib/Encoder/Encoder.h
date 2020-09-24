@@ -1,7 +1,7 @@
 class Encoder {
   private:
     const int TICKS_PER_REV = 360;
-    int value;
+    volatile int value;
     float fractOfSec;
     int intervalMillis; // 10 - 20000
     long previousMillis = 0;
