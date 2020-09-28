@@ -1,7 +1,7 @@
 #include <PinChangeInterrupt.h>
 #include "Wheel.h"
 
-Wheel w1("w1", 1, 2,  50);
+Wheel w1("w1", 1, 2,  25);
 Wheel w2("w2", 2, 13, 50);
 Wheel w3("w3", 3, 18, 50);
 Wheel w4("w4", 4, 19, 50);
@@ -17,7 +17,7 @@ int u = 0;
 
 unsigned long now = 0;
 unsigned long prev = 0;
-unsigned long timer = 3000;
+unsigned long timer = 5000;
 bool state = false;
 
 void setup() {
@@ -27,7 +27,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(w4.getEncPin()), updateW4, RISING);
   
   Serial.begin(9600);
-  Serial.setTimeout(100);
+  Serial.setTimeout(10);
 }
 
 void userInput() {
@@ -42,11 +42,12 @@ void userInput() {
 }
 
 void runMotors() {
-  w1.update();
+  // w1.update();
   // w2.update();
   // w3.update();
   // w4.update();
   u = w1.reachVelocity(vel);
+  // w1.setMotorValue(vel);
   // w2.setMotorValue(vel);
   // w3.setMotorValue(vel);
   // w4.setMotorValue(vel);
@@ -58,7 +59,7 @@ void sendData() {
   Serial.print(' ');
   Serial.print(u);
   Serial.print(' ');
-  Serial.print(w1.getRPM(), 2);
+  Serial.print(w1.getDirectedRPM(), 2);
   Serial.print(';');
 }
 
@@ -67,7 +68,7 @@ void changeState() {
   if(state) {
     vel = 100;
   } else {
-    vel = 0;
+    vel = -100;
   }
 }
 

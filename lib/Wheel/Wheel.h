@@ -1,6 +1,6 @@
 #include "Motor.h"
 #include "Encoder.h"
-#include "PID.h"
+#include <PID_v1.h>
 
 class Wheel {
   private:
@@ -8,15 +8,23 @@ class Wheel {
     Motor* motor;
     Encoder* encoder;
     PID* pid;
-    bool isForward;
-    
+    bool isDirectionSwitched;
+
+    double pidSetpoint, pidFeedback, pidOutput;
+    double kP, kI, kD;
+
+    int intervalMillis; // 10 - 20000
+    long previousMillis = 0;
+    long currentMillis = 0;
+
+    float prevRPM;
+
   public:    
     Wheel(String wheelName, int motorNum, int encPin, int intervalMillis);
     ~Wheel();
-    void update();
     int getEncPin();
-    float getRPM();
+    float getDirectedRPM();
     void incEnc();
-    void setMotorValue(int value); // TODO remove after controller implementation
-    int reachVelocity(float desiredRPM);
+    // void setMotorValue(int value); // TODO remove after controller implementation
+    double reachVelocity(float desiredRPM);
 };
