@@ -11,8 +11,9 @@ float Encoder::getRPM() {
   return rpm;
 }
 
-void Encoder::evaluateSpeed() {
+void Encoder::evaluateRPM() {
   rpm = (float)value / TICKS_PER_REV * 60 / fractOfSec;
+  if (isBackward) { rpm = -rpm; }
   value = 0;
 }
 

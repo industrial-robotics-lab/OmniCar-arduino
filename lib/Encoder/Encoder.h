@@ -7,8 +7,10 @@ class Encoder {
     
   public:
     int pin;
+    bool isBackward;
+    
     Encoder(int pin, int intervalMillis);
     float getRPM();
-    void evaluateSpeed();
+    void evaluateRPM();
     void increment();
 };

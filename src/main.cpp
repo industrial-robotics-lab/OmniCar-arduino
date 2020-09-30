@@ -1,10 +1,11 @@
 #include <PinChangeInterrupt.h>
 #include "Wheel.h"
 
-Wheel w1("w1", 1, 2,  25);
-Wheel w2("w2", 2, 13, 50);
-Wheel w3("w3", 3, 18, 50);
-Wheel w4("w4", 4, 19, 50);
+int interval = 25; // millis
+Wheel w1("w1", 1, 2,  interval);
+Wheel w2("w2", 2, 13, interval);
+Wheel w3("w3", 3, 18, interval);
+Wheel w4("w4", 4, 19, interval);
 //Motor m1(1);
 //Encoder e1(2, 50);
 void updateW1() { w1.incEnc(); }
@@ -27,30 +28,23 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(w4.getEncPin()), updateW4, RISING);
   
   Serial.begin(9600);
-  Serial.setTimeout(10);
+  Serial.setTimeout(interval);
 }
 
 void userInput() {
   int parsedInt = Serial.parseInt();
   if (parsedInt != 0) {
+    parsedInt = constrain(parsedInt, -255, 256);
+    if (parsedInt == 256) { parsedInt = 0; }
     vel = parsedInt;
-    vel = constrain(vel, -255, 256);
-    if (vel == 256) { vel = 0; }
     Serial.print("Set velocity: ");
     Serial.println(vel);
   }
 }
 
 void runMotors() {
-  // w1.update();
-  // w2.update();
-  // w3.update();
-  // w4.update();
   u = w1.reachVelocity(vel);
   // w1.setMotorValue(vel);
-  // w2.setMotorValue(vel);
-  // w3.setMotorValue(vel);
-  // w4.setMotorValue(vel);
 }
 
 void sendData() {
@@ -59,16 +53,16 @@ void sendData() {
   Serial.print(' ');
   Serial.print(u);
   Serial.print(' ');
-  Serial.print(w1.getDirectedRPM(), 2);
+  Serial.print(w1.getRPM(), 2);
   Serial.print(';');
 }
 
 void changeState() {
   state = !state;
   if(state) {
-    vel = 100;
+    vel = 255;
   } else {
-    vel = -100;
+    vel = -255;
   }
 }
 

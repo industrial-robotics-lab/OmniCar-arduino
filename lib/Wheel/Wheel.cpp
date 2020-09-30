@@ -25,22 +25,23 @@ int Wheel::getEncPin() {
   return encoder->pin;
 }
 
-float Wheel::getDirectedRPM() {
-  float rpm = encoder->getRPM();
-  if (isDirectionSwitched) {
-    return -rpm;
-  } else {
-    return rpm;
-  }
-}
-
 void Wheel::incEnc() {
   encoder->increment();
 }
 
+float Wheel::getRPM() {
+  return encoder->getRPM();
+}
+
 // void Wheel::setMotorValue(int value) {
-//   // isBackward = value < 0;
-//   motor->setValue(value);
+//   currentMillis = millis();
+//   if (currentMillis - previousMillis > intervalMillis) {
+//     previousMillis = currentMillis;
+
+//     encoder->isBackward = motor->isBackward;
+//     encoder->evaluateRPM();
+//     motor->setValue(value);
+//   }
 // }
 
 double Wheel::reachVelocity(float desiredRPM) {
@@ -48,15 +49,12 @@ double Wheel::reachVelocity(float desiredRPM) {
   if (currentMillis - previousMillis > intervalMillis) {
     previousMillis = currentMillis;
 
-    encoder->evaluateSpeed();
-    isDirectionSwitched = (desiredRPM < 0) != (prevRPM < 0);
-    pidFeedback = getDirectedRPM();
+    encoder->isBackward = motor->isBackward;
+    encoder->evaluateRPM();
+    pidFeedback = encoder->getRPM();
     pidSetpoint = desiredRPM;
     pid->Compute();
     motor->setValue(pidOutput);
-
-    prevRPM = desiredRPM;
-
-    return pidOutput;
   }
+  return pidOutput;
 }

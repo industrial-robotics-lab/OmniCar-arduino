@@ -8,7 +8,6 @@ class Wheel {
     Motor* motor;
     Encoder* encoder;
     PID* pid;
-    bool isDirectionSwitched;
 
     double pidSetpoint, pidFeedback, pidOutput;
     double kP, kI, kD;
@@ -17,14 +16,12 @@ class Wheel {
     long previousMillis = 0;
     long currentMillis = 0;
 
-    float prevRPM;
-
   public:    
     Wheel(String wheelName, int motorNum, int encPin, int intervalMillis);
     ~Wheel();
     int getEncPin();
-    float getDirectedRPM();
     void incEnc();
-    // void setMotorValue(int value); // TODO remove after controller implementation
+    float getRPM();
+    // void setMotorValue(int value); // TODO direct PWM on motor without any conrol
     double reachVelocity(float desiredRPM);
 };
