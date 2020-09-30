@@ -1,8 +1,7 @@
 #include "Arduino.h"
 #include "Wheel.h"
 
-Wheel::Wheel(String wheelName, int motorNum, int encPin, int intervalMillis) {
-  this->wheelName = wheelName;
+Wheel::Wheel(int motorNum, int encPin, int intervalMillis) {
   this->motor = new Motor(motorNum);
   this->encoder = new Encoder(encPin, intervalMillis);
   this->intervalMillis = intervalMillis;

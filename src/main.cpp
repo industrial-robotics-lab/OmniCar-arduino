@@ -1,17 +1,17 @@
 #include <PinChangeInterrupt.h>
-#include "Wheel.h"
+// #include "Wheel.h"
+#include "Car.h"
 
-int interval = 25; // millis
-Wheel w1("w1", 1, 2,  interval);
-Wheel w2("w2", 2, 13, interval);
-Wheel w3("w3", 3, 18, interval);
-Wheel w4("w4", 4, 19, interval);
-//Motor m1(1);
-//Encoder e1(2, 50);
-void updateW1() { w1.incEnc(); }
-void updateW2() { w2.incEnc(); }
-void updateW3() { w3.incEnc(); }
-void updateW4() { w4.incEnc(); }
+int intervalMillis = 25; // millis
+Car car(1, 2, 3, 4, 2, 13, 18, 19, intervalMillis);
+// Wheel w1("w1", 1, 2,  interval);
+// Wheel w2("w2", 2, 13, interval);
+// Wheel w3("w3", 3, 18, interval);
+// Wheel w4("w4", 4, 19, interval);
+void updateW1() { car.incEnc1(); }
+void updateW2() { car.incEnc2(); }
+void updateW3() { car.incEnc3(); }
+void updateW4() { car.incEnc4(); }
 
 int vel = 0;
 int u = 0;
@@ -22,13 +22,13 @@ unsigned long timer = 5000;
 bool state = false;
 
 void setup() {
-  attachInterrupt(digitalPinToInterrupt(w1.getEncPin()), updateW1, RISING);
-  attachPCINT(digitalPinToPCINT(w2.getEncPin()), updateW2, RISING);
-  attachInterrupt(digitalPinToInterrupt(w3.getEncPin()), updateW3, RISING);
-  attachInterrupt(digitalPinToInterrupt(w4.getEncPin()), updateW4, RISING);
+  attachInterrupt(digitalPinToInterrupt(car.getEncPin1()), updateW1, RISING);
+  attachPCINT(digitalPinToPCINT(car.getEncPin2()), updateW2, RISING);
+  attachInterrupt(digitalPinToInterrupt(car.getEncPin3()), updateW3, RISING);
+  attachInterrupt(digitalPinToInterrupt(car.getEncPin4()), updateW4, RISING);
   
   Serial.begin(9600);
-  Serial.setTimeout(interval);
+  Serial.setTimeout(intervalMillis);
 }
 
 void userInput() {
@@ -43,26 +43,34 @@ void userInput() {
 }
 
 void runMotors() {
-  u = w1.reachVelocity(vel);
+  // u = w1.reachVelocity(vel);
   // w1.setMotorValue(vel);
+  car.runForward(vel);
 }
 
 void sendData() {
   Serial.print('$');
-  Serial.print(vel);
+  // Serial.print(vel);
+  // Serial.print(' ');
+  // Serial.print(u);
+  // Serial.print(' ');
+  // Serial.print(w1.getRPM(), 2);
+  Serial.print(car.getRPM1(), 2);
   Serial.print(' ');
-  Serial.print(u);
+  Serial.print(car.getRPM2(), 2);
   Serial.print(' ');
-  Serial.print(w1.getRPM(), 2);
+  Serial.print(car.getRPM3(), 2);
+  Serial.print(' ');
+  Serial.print(car.getRPM4(), 2);
   Serial.print(';');
 }
 
 void changeState() {
   state = !state;
   if(state) {
-    vel = 255;
+    vel = 100;
   } else {
-    vel = -255;
+    vel = -100;
   }
 }
 

@@ -1,13 +1,14 @@
 #include <AFMotor.h>
 
-class Motor {
-  private:
-    AF_DCMotor* motor;
+class Motor
+{
+private:
+  AF_DCMotor *motor;
 
-  public:
-    bool isBackward;
-    
-    Motor(int number);
-    ~Motor();
-    void setValue(int value); // [-255; 255]
+public:
+  bool isBackward;
+
+  Motor(int number);
+  ~Motor();
+  void setValue(int value); // [-255; 255]
 };
