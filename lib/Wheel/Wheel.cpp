@@ -1,12 +1,13 @@
 #include "Arduino.h"
 #include "Wheel.h"
 
-Wheel::Wheel(int motorNum, int encPin, int intervalMillis) {
+Wheel::Wheel(int motorNum, int encPin, int intervalMillis, int initDelay) {
   this->motor = new Motor(motorNum);
   this->encoder = new Encoder(encPin, intervalMillis);
   this->intervalMillis = intervalMillis;
+  this->initDelay = initDelay;
 
-  kP = 1; kI = 5; kD = 0;
+  kP = 1; kI = 5; kD = 0.01;
   this->pid = new PID(&pidFeedback, &pidOutput, &pidSetpoint, kP, kI, kD, DIRECT);
   pid->SetMode(AUTOMATIC);
   pid->SetOutputLimits(-255, 255);
@@ -45,6 +46,10 @@ float Wheel::getRPM() {
 
 double Wheel::reachVelocity(float desiredRPM) {
   currentMillis = millis();
+  if (currentMillis < initDelay) {
+    previousMillis = currentMillis;
+    return 0;
+  }
   if (currentMillis - previousMillis > intervalMillis) {
     previousMillis = currentMillis;
 

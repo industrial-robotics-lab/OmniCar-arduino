@@ -16,8 +16,10 @@ private:
   long previousMillis = 0;
   long currentMillis = 0;
 
+  int initDelay;
+
 public:
-  Wheel(int motorNum, int encPin, int intervalMillis);
+  Wheel(int motorNum, int encPin, int intervalMillis, int);
   ~Wheel();
   int getEncPin();
   void incEnc();

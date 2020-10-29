@@ -1,10 +1,11 @@
 #include "Car.h"
 
 Car::Car(int mPin1, int mPin2, int mPin3, int mPin4, int ePin1, int ePin2, int ePin3, int ePin4, int intervalMillis) {
-    w1 = new Wheel(mPin1, ePin1, intervalMillis);
-    w2 = new Wheel(mPin2, ePin2, intervalMillis);
-    w3 = new Wheel(mPin3, ePin3, intervalMillis);
-    w4 = new Wheel(mPin4, ePin4, intervalMillis);
+    int updateShift = intervalMillis / 4;
+    w1 = new Wheel(mPin1, ePin1, intervalMillis, 0);
+    w2 = new Wheel(mPin2, ePin2, intervalMillis, updateShift);
+    w3 = new Wheel(mPin3, ePin3, intervalMillis, updateShift * 2);
+    w4 = new Wheel(mPin4, ePin4, intervalMillis, updateShift * 3);
 }
 Car::~Car() {
     delete w1;
