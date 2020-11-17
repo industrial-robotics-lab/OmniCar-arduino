@@ -1,16 +1,26 @@
 #include <PinChangeInterrupt.h>
-// #include "Wheel.h"
+#include <Thread.h>
 #include "Car.h"
-#include "SerialTalker.h"
+#include "SerialTransceiver.h"
 
-SerialTalker talker;
-int intervalMillis = 40;
+float desiredRpms[4] = {}; // init with zeros
+float feedbackRpms[4] = {}; // init with zeros
+
+int carPeriod = 40;
 int encoderPins[4] = {2, 13, 18, 19};
-Car car(encoderPins, intervalMillis);
+Car car(encoderPins, carPeriod, desiredRpms, feedbackRpms);
 void updateW1() { car.incEnc1(); }
 void updateW2() { car.incEnc2(); }
 void updateW3() { car.incEnc3(); }
 void updateW4() { car.incEnc4(); }
+int serialTimeout = 3;
+SerialTransceiver transceiver(desiredRpms, feedbackRpms);
+
+Thread carThread = Thread();
+Thread serialThread = Thread();
+
+void updateCar() {car.update();}
+void talkSerial() {transceiver.talk();}
 
 void setup() {
   attachInterrupt(digitalPinToInterrupt(car.getEncPin1()), updateW1, RISING);
@@ -19,13 +29,13 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(car.getEncPin4()), updateW4, RISING);
   
   Serial.begin(115200);
-  Serial.setTimeout(intervalMillis);
+  Serial.setTimeout(serialTimeout);
+
+  carThread.onRun(updateCar);
+  serialThread.onRun(talkSerial);
 }
 
 void loop() {
-  float* control_from_rpi = talker.rx();
-  car.setDesiredRpms(control_from_rpi);
-  car.updateFeedbackRpms();
-  talker.tx(car.getFeedbackRpms());
-  car.reachDesiredRpms();
+  if (carThread.shouldRun()) {carThread.run();}
+  if (serialThread.shouldRun()) {serialThread.run();}
 }

@@ -1,18 +1,19 @@
 #include <Arduino.h>
 
-class SerialTalker
+class SerialTransceiver
 {
 private:
+    float *desiredPtr;
+    float *feedbackPtr;
     byte buffer[17];
     union { float f; byte b[4]; } n1;
     union { float f; byte b[4]; } n2;
     union { float f; byte b[4]; } n3;
     union { float f; byte b[4]; } n4;
-    float rpms[4];
+    void rx();
+    void tx();
 
 public:
-    SerialTalker();
-    float* rx();
-    void tx(float rpms[4]);
-
+    SerialTransceiver(float *desired, float *feedback);
+    void talk();
 };
