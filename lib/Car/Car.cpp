@@ -1,11 +1,11 @@
 #include "Car.h"
 
-Car::Car(int mPin1, int mPin2, int mPin3, int mPin4, int ePin1, int ePin2, int ePin3, int ePin4, int intervalMillis) {
+Car::Car(int encoderPins[4], int intervalMillis) {
     int updateShift = intervalMillis / 4;
-    w1 = new Wheel(mPin1, ePin1, intervalMillis, 0);
-    w2 = new Wheel(mPin2, ePin2, intervalMillis, updateShift);
-    w3 = new Wheel(mPin3, ePin3, intervalMillis, updateShift * 2);
-    w4 = new Wheel(mPin4, ePin4, intervalMillis, updateShift * 3);
+    w1 = new Wheel(1, encoderPins[0], intervalMillis, 0);
+    w2 = new Wheel(2, encoderPins[1], intervalMillis, updateShift);
+    w3 = new Wheel(3, encoderPins[2], intervalMillis, updateShift * 2);
+    w4 = new Wheel(4, encoderPins[3], intervalMillis, updateShift * 3);
 }
 Car::~Car() {
     delete w1;
@@ -14,11 +14,27 @@ Car::~Car() {
     delete w4;
 }
 
-void Car::runForward(float rpm) {
-    w1->reachVelocity(rpm);
-    w2->reachVelocity(rpm);
-    w3->reachVelocity(rpm);
-    w4->reachVelocity(rpm);
+float* Car::getFeedbackRpms() { return feedbackRpms; }
+
+void Car::setDesiredRpms(float values[4]) {
+    desiredRpms[0] = values[0];
+    desiredRpms[1] = values[1];
+    desiredRpms[2] = values[2];
+    desiredRpms[3] = values[3];
+}
+
+void Car::updateFeedbackRpms() {
+    feedbackRpms[0] = w1->getRPM();
+    feedbackRpms[1] = w2->getRPM();
+    feedbackRpms[2] = w3->getRPM();
+    feedbackRpms[3] = w4->getRPM();
+}
+
+void Car::reachDesiredRpms() {
+    w1->reachVelocity(desiredRpms[0]);
+    w2->reachVelocity(desiredRpms[1]);
+    w3->reachVelocity(desiredRpms[2]);
+    w4->reachVelocity(desiredRpms[3]);
 }
 
 int Car::getEncPin1() { return w1->getEncPin(); }
@@ -30,8 +46,3 @@ void Car::incEnc1() { w1->incEnc(); }
 void Car::incEnc2() { w2->incEnc(); }
 void Car::incEnc3() { w3->incEnc(); }
 void Car::incEnc4() { w4->incEnc(); }
-
-float Car::getRPM1() { return w1->getRPM(); }
-float Car::getRPM2() { return w2->getRPM(); }
-float Car::getRPM3() { return w3->getRPM(); }
-float Car::getRPM4() { return w4->getRPM(); }

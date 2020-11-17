@@ -3,15 +3,20 @@
 class Car
 {
 private:
+    float desiredRpms[4] = {}; // init with zeros
+    float feedbackRpms[4] = {}; // init with zeros
     Wheel *w1;
     Wheel *w2;
     Wheel *w3;
     Wheel *w4;
 
 public:
-    Car(int mPin1, int mPin2, int mPin3, int mPin4, int ePin1, int ePin2, int ePin3, int ePin4, int intervalMillis);
+    Car(int encoderPins[4], int intervalMillis);
     ~Car();
-    void runForward(float rpm);
+    float* getFeedbackRpms();
+    void setDesiredRpms(float[4]);
+    void updateFeedbackRpms();
+    void reachDesiredRpms();
 
     int getEncPin1();
     int getEncPin2();
@@ -22,9 +27,4 @@ public:
     void incEnc2();
     void incEnc3();
     void incEnc4();
-
-    float getRPM1();
-    float getRPM2();
-    float getRPM3();
-    float getRPM4();
 };
