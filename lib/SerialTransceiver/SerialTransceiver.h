@@ -3,6 +3,7 @@
 class SerialTransceiver
 {
 private:
+    int maxRpm;
     float *desiredPtr;
     float *feedbackPtr;
     byte buffer[17];

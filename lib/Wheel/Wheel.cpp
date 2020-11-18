@@ -33,17 +33,6 @@ float Wheel::getRPM() {
   return encoder->getRPM();
 }
 
-// void Wheel::setMotorValue(int value) {
-//   currentMillis = millis();
-//   if (currentMillis - previousMillis > intervalMillis) {
-//     previousMillis = currentMillis;
-
-//     encoder->isBackward = motor->isBackward;
-//     encoder->evaluateRPM();
-//     motor->setValue(value);
-//   }
-// }
-
 double Wheel::reachVelocity(float desiredRPM) {
   currentMillis = millis();
   if (currentMillis < initDelay) {

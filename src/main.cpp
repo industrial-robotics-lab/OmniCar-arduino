@@ -13,7 +13,6 @@ void updateW1() { car.incEnc1(); }
 void updateW2() { car.incEnc2(); }
 void updateW3() { car.incEnc3(); }
 void updateW4() { car.incEnc4(); }
-int serialTimeout = 3;
 SerialTransceiver transceiver(desiredRpms, feedbackRpms);
 
 Thread carThread = Thread();
@@ -29,7 +28,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(car.getEncPin4()), updateW4, RISING);
   
   Serial.begin(115200);
-  Serial.setTimeout(serialTimeout);
+  Serial.setTimeout(1000);
 
   carThread.onRun(updateCar);
   serialThread.onRun(talkSerial);
