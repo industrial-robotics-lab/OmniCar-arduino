@@ -9,21 +9,27 @@ private:
     Wheel *w2;
     Wheel *w3;
     Wheel *w4;
-    void updateFeedbackRpms();
-    void reachDesiredRpms();
 
 public:
-    Car(int encoderPins[4], int intervalMillis, float *desired, float *feedback);
+    Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback);
     ~Car();
     void update();
 
-    int getEncPin1();
-    int getEncPin2();
-    int getEncPin3();
-    int getEncPin4();
+    int getEncPin1A();
+    int getEncPin1B();
+    int getEncPin2A();
+    int getEncPin2B();
+    int getEncPin3A();
+    int getEncPin3B();
+    int getEncPin4A();
+    int getEncPin4B();
 
-    void incEnc1();
-    void incEnc2();
-    void incEnc3();
-    void incEnc4();
+    void incEnc1A();
+    void incEnc1B();
+    void incEnc2A();
+    void incEnc2B();
+    void incEnc3A();
+    void incEnc3B();
+    void incEnc4A();
+    void incEnc4B();
 };

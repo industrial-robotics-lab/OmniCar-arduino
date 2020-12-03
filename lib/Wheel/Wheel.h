@@ -5,25 +5,27 @@
 class Wheel
 {
 private:
+  const int TICKS_PER_REV = 360;
+  const double radius = 0.03;
+  double pidSetpoint, pidFeedback, pidOutput;
+  double kP, kI, kD;
+  double position;
+  
   Motor *motor;
   Encoder *encoder;
   PID *pid;
 
-  double pidSetpoint, pidFeedback, pidOutput;
-  double kP, kI, kD;
-
-  int intervalMillis; // 10 - 20000
-  long previousMillis = 0;
-  long currentMillis = 0;
-
-  int initDelay;
+  void updatePosition();
 
 public:
-  Wheel(int motorNum, int encPin, int intervalMillis, int);
+  Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise);
   ~Wheel();
-  int getEncPin();
-  void incEnc();
-  float getRPM();
-  // void setMotorValue(int value); // TODO direct PWM on motor without any conrol
-  double reachVelocity(float desiredRPM);
+  void reachPosition(double desiredPosition);
+  void triggerA();
+  void triggerB();
+
+  double getPidOutput();
+  double getPosition();
+  int getEncPinA();
+  int getEncPinB();
 };
