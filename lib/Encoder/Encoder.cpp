@@ -1,20 +1,51 @@
 #include "Arduino.h"
 #include "Encoder.h"
 
-Encoder::Encoder(int pin, int intervalMillis) {
-  pinMode(pin, INPUT_PULLUP);
-  this->pin = pin;
-  this->fractOfSec = intervalMillis / 1000.0;
+Encoder::Encoder(int pinA, int pinB, bool isClockwise)
+{
+  pinMode(pinA, INPUT_PULLUP);
+  pinMode(pinB, INPUT_PULLUP);
+  this->pinA = pinA;
+  this->pinB = pinB;
+  if (isClockwise) {
+    increment = 1;
+  } else {
+    increment = -1;
+  }
 }
 
-float Encoder::getRPM() {
-  return rpm;
+void Encoder::triggerA()
+{
+  if (digitalRead(pinA) != digitalRead(pinB))
+  {
+    ticks += increment;
+  }
+  else
+  {
+    ticks -= increment;
+  }
 }
 
-void Encoder::evaluateRPM() {
-  rpm = (float)value / TICKS_PER_REV * 60 / fractOfSec;
-  if (isBackward) { rpm = -rpm; }
-  value = 0;
+void Encoder::triggerB()
+{
+  if (digitalRead(pinA) == digitalRead(pinB))
+  {
+    ticks += increment;
+  }
+  else
+  {
+    ticks -= increment;
+  }
 }
 
-void Encoder::increment() { value++; }
+volatile long Encoder::getTicks() {
+  return ticks;
+}
+
+int Encoder::getPinA() {
+  return pinA;
+}
+
+int Encoder::getPinB() {
+  return pinB;
+}

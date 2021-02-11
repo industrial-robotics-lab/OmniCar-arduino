@@ -13,10 +13,8 @@ void Motor::setValue(int value) {
   } else if (allowedValue > 0) {
     motor->run(FORWARD);
     motor->setSpeed(abs(allowedValue));
-    isBackward = false;
   } else {
     motor->run(BACKWARD);
     motor->setSpeed(abs(allowedValue));
-    isBackward = true;
   }
 }

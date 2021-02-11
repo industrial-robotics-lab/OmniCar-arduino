@@ -1,53 +1,47 @@
 #include "Arduino.h"
 #include "Wheel.h"
 
-Wheel::Wheel(int motorNum, int encPin, int intervalMillis, int initDelay) {
-  this->motor = new Motor(motorNum);
-  this->encoder = new Encoder(encPin, intervalMillis);
-  this->intervalMillis = intervalMillis;
-  this->initDelay = initDelay;
+Wheel::Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise)
+{
+    // 1900 - stability limit for motor 1
+    kP = 1140;
+    kI = 3040;
+    kD = 107;
 
-  kP = 1; kI = 5; kD = 0.01;
-  this->pid = new PID(&pidFeedback, &pidOutput, &pidSetpoint, kP, kI, kD, DIRECT);
-  pid->SetMode(AUTOMATIC);
-  pid->SetOutputLimits(-255, 255);
-  pid->SetSampleTime(intervalMillis); // in millis
-  // pid->SetTunings(1, 2, 3);
-  // pid->SetControllerDirection(DIRECT);
+    this->motor = new Motor(motorNum);
+    this->encoder = new Encoder(encPinA, encPinB, isClockwise);
+    this->pid = new PID(&pidFeedback, &pidOutput, &pidSetpoint, kP, kI, kD, DIRECT);
+    pid->SetMode(AUTOMATIC);
+    pid->SetOutputLimits(-255, 255);
+    // pid->SetSampleTime(intervalMillis); // in millis
+    // pid->SetTunings(1, 2, 3);
+    // pid->SetControllerDirection(DIRECT);
 }
-Wheel::~Wheel() { 
-  delete motor;
-  delete encoder;
-  delete pid;
-}
-
-int Wheel::getEncPin() {
-  return encoder->pin;
-}
-
-void Wheel::incEnc() {
-  encoder->increment();
+Wheel::~Wheel()
+{
+    delete motor;
+    delete encoder;
+    delete pid;
 }
 
-float Wheel::getRPM() {
-  return encoder->getRPM();
+void Wheel::updatePosition() {
+    long encTicks = encoder->getTicks();
+    position = TWO_PI * radius * ((double)encTicks / TICKS_PER_REV);
 }
 
-double Wheel::reachVelocity(float desiredRPM) {
-  currentMillis = millis();
-  if (currentMillis < initDelay) {
-    previousMillis = currentMillis;
-    return 0;
-  }
-  if (currentMillis - previousMillis > intervalMillis) {
-    previousMillis = currentMillis;
-
-    encoder->isBackward = motor->isBackward;
-    encoder->evaluateRPM();
-    pidFeedback = encoder->getRPM();
-    pidSetpoint = desiredRPM;
+void Wheel::reachPosition(double desiredPosition)
+{
+    updatePosition();
+    pidFeedback = position;
+    pidSetpoint = desiredPosition;
     pid->Compute();
     motor->setValue(pidOutput);
-  }
-  return pidOutput;
 }
+
+void Wheel::triggerA() { encoder->triggerA(); }
+void Wheel::triggerB() { encoder->triggerB(); }
+
+double Wheel::getPidOutput() { return pidOutput; }
+double Wheel::getPosition() { return position; }
+int Wheel::getEncPinA() { return encoder->getPinA(); }
+int Wheel::getEncPinB() { return encoder->getPinB(); }

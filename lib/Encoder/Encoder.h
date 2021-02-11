@@ -1,17 +1,16 @@
 class Encoder
 {
 private:
-  const int TICKS_PER_REV = 360;
-  volatile int value;
-  float fractOfSec;
-  float rpm;
+  int pinA;
+  int pinB;
+  volatile long ticks = 0;
+  int increment = 0;
 
 public:
-  int pin;
-  bool isBackward;
-
-  Encoder(int pin, int intervalMillis);
-  float getRPM();
-  void evaluateRPM();
-  void increment();
+  Encoder(int pinA, int pinB, bool isClockwise);
+  void triggerA();
+  void triggerB();
+  volatile long getTicks();
+  int getPinA();
+  int getPinB();
 };

@@ -6,8 +6,6 @@ private:
   AF_DCMotor *motor;
 
 public:
-  bool isBackward;
-
   Motor(int number);
   ~Motor();
   void setValue(int value); // [-255; 255]
