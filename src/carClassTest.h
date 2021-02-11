@@ -7,7 +7,7 @@ float desiredRpms[4] = {};  // init with zeros
 float feedbackRpms[4] = {}; // init with zeros
 
 int carPeriod = 40;
-int encoderPins[8] = {2, 13, 18, 19, 50, 51, 52, 53};
+int encoderPins[8] = {18, 19, 20, 21, 50, 52, 51, 53};
 Car car(encoderPins, carPeriod, desiredRpms, feedbackRpms);
 void updateW1A() { car.incEnc1A(); }
 void updateW1B() { car.incEnc1B(); }
