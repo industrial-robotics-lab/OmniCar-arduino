@@ -3,7 +3,7 @@
 
 int pinA = 50;
 int pinB = 51;
-Encoder encoder(pinA, pinB);
+Encoder encoder(pinA, pinB, true);
 void triggerA() { encoder.triggerA(); }
 void triggerB() { encoder.triggerB(); }
 
