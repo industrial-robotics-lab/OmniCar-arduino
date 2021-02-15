@@ -20,6 +20,7 @@ private:
 public:
   Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise);
   ~Wheel();
+  void setValue(double desiredValue);
   void reachPosition(double desiredPosition);
   void triggerA();
   void triggerB();

@@ -1,11 +1,16 @@
 #include <PinChangeInterrupt.h>
-const int pinA = 50;
-const int pinB = 51;
+// #include "Arduino.h"
+
+const int pinA = 18;
+const int pinB = 19;
 
 volatile long position = 0;
 
 void printPosition() {
-    Serial.println("Position: " + (String)position);
+    // Serial.println("Position: " + (String)position);
+    Serial.print('$');
+    Serial.print(position);
+    Serial.print(';');
 }
 
 void triggerA() {
@@ -26,12 +31,12 @@ void triggerB() {
 }
 
 void setup() {
-    // attachInterrupt(digitalPinToInterrupt(pinA), triggerA, RISING);
-
     pinMode(pinA, INPUT_PULLUP);
     pinMode(pinB, INPUT_PULLUP);
-    attachPCINT(digitalPinToPCINT(pinA), triggerA, RISING);
-    attachPCINT(digitalPinToPCINT(pinB), triggerB, RISING);
+    attachInterrupt(digitalPinToInterrupt(pinA), triggerA, RISING);
+    attachInterrupt(digitalPinToInterrupt(pinB), triggerB, RISING);
+    // attachPCINT(digitalPinToPCINT(pinA), triggerA, RISING);
+    // attachPCINT(digitalPinToPCINT(pinB), triggerB, RISING);
 
     Serial.begin(115200);
 }

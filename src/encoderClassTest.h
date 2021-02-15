@@ -8,6 +8,8 @@ void triggerA() { encoder.triggerA(); }
 void triggerB() { encoder.triggerB(); }
 
 void setup() {
+    // attachInterrupt(digitalPinToInterrupt(pinA), triggerA, RISING);
+    // attachInterrupt(digitalPinToInterrupt(pinB), triggerB, RISING);
     attachPCINT(digitalPinToPCINT(pinA), triggerA, RISING);
     attachPCINT(digitalPinToPCINT(pinB), triggerB, RISING);
 

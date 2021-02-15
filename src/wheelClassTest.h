@@ -2,20 +2,19 @@
 #include "Wheel.h"
 
 int intervalMillis = 20;
-Wheel w(1, 50, 51, false);
+Wheel w(1, 18, 19, false);
 void triggerA() { w.triggerA(); }
 void triggerB() { w.triggerB(); }
 
 unsigned long period = 3000;
-unsigned long valuesSize = 2;
-double desiredValues[] = {0, 1};
+unsigned long valuesSize = 3;
+double desiredValues[] = {0, 3, 0};
 
 double desiredPosition = 0;
 
 void setup() {
-  // attachInterrupt(digitalPinToInterrupt(w1.getEncPin()), updateW1, RISING);
-    attachPCINT(digitalPinToPCINT(w.getEncPinA()), triggerA, RISING);
-    attachPCINT(digitalPinToPCINT(w.getEncPinB()), triggerB, RISING);
+    attachInterrupt(digitalPinToInterrupt(w.getEncPinA()), triggerA, RISING);
+    attachInterrupt(digitalPinToInterrupt(w.getEncPinB()), triggerB, RISING);
 
   Serial.begin(115200);
   Serial.setTimeout(intervalMillis);
@@ -32,8 +31,8 @@ void sendData() {
   Serial.print('$');
   Serial.print(desiredPosition);
   Serial.print(' ');
-  // Serial.print(w.getPidOutput());
-  // Serial.print(' ');
+  Serial.print(w.getPidOutput());
+  Serial.print(' ');
   Serial.print(w.getPosition());
   Serial.print(';');
 }

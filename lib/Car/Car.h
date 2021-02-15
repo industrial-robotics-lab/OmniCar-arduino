@@ -13,7 +13,7 @@ private:
 public:
     Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback);
     ~Car();
-    void update();
+    void setValues(double v1, double v2, double v3, double v4);
 
     int getEncPin1A();
     int getEncPin1B();

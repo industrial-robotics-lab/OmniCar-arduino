@@ -16,6 +16,14 @@ void updateW3B() { car.incEnc3B(); }
 void updateW4A() { car.incEnc4A(); }
 void updateW4B() { car.incEnc4B(); }
 
+int plan[5][4] = {
+    {},
+    {},
+    {},
+    {},
+    {}
+};
+
 void setup()
 {
     attachInterrupt(digitalPinToInterrupt(car.getEncPin1A()), updateW1A, RISING);
@@ -33,5 +41,5 @@ void setup()
 
 void loop()
 {
-    car.update();
+    car.setValues(250, 250, 250, 250);
 }

@@ -18,7 +18,13 @@ Car::~Car()
     delete w4;
 }
 
-void Car::update() {}
+void Car::setValues(double v1, double v2, double v3, double v4)
+{
+    w1->setValue(v1);
+    w2->setValue(v2);
+    w3->setValue(v3);
+    w4->setValue(v4);
+}
 
 int Car::getEncPin1A() { return w1->getEncPinA(); }
 int Car::getEncPin1B() { return w1->getEncPinB(); }

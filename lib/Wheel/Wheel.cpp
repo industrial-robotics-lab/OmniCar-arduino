@@ -4,9 +4,8 @@
 Wheel::Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise)
 {
     // 1900 - stability limit for motor 1
-    kP = 1140;
-    kI = 3040;
-    kD = 107;
+    kP = 1140; kI = 3040; kD = 107; // position PID
+    // kP = 1; kI = 5; kD = 0.01; // velocity PID
 
     this->motor = new Motor(motorNum);
     this->encoder = new Encoder(encPinA, encPinB, isClockwise);
@@ -22,6 +21,10 @@ Wheel::~Wheel()
     delete motor;
     delete encoder;
     delete pid;
+}
+
+void Wheel::setValue(double desiredValue) {
+    motor->setValue(desiredValue);
 }
 
 void Wheel::updatePosition() {
