@@ -7,9 +7,12 @@ Encoder::Encoder(int pinA, int pinB, bool isClockwise)
   pinMode(pinB, INPUT_PULLUP);
   this->pinA = pinA;
   this->pinB = pinB;
-  if (isClockwise) {
+  if (isClockwise)
+  {
     increment = 1;
-  } else {
+  }
+  else
+  {
     increment = -1;
   }
 }
@@ -38,14 +41,22 @@ void Encoder::triggerB()
   }
 }
 
-volatile long Encoder::getTicks() {
+volatile long Encoder::getTicks()
+{
   return ticks;
 }
 
-int Encoder::getPinA() {
+void Encoder::reset()
+{
+  ticks = 0;
+}
+
+int Encoder::getPinA()
+{
   return pinA;
 }
 
-int Encoder::getPinB() {
+int Encoder::getPinB()
+{
   return pinB;
 }

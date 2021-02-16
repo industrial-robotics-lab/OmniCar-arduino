@@ -1,9 +1,9 @@
 #include <PinChangeInterrupt.h>
 #include "Encoder.h"
 
-int pinA = 50;
-int pinB = 51;
-Encoder encoder(pinA, pinB, true);
+int pinA = 51;
+int pinB = 53;
+Encoder encoder(pinA, pinB, false);
 void triggerA() { encoder.triggerA(); }
 void triggerB() { encoder.triggerB(); }
 

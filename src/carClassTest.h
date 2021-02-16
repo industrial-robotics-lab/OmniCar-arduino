@@ -1,12 +1,9 @@
 #include <PinChangeInterrupt.h>
 #include "Car.h"
 
-float desiredRpms[4] = {};  // init with zeros
-float feedbackRpms[4] = {}; // init with zeros
-
 int carPeriod = 40; // millis
 int encoderPins[8] = {18, 19, 20, 21, 50, 52, 51, 53};
-Car car(TRACK/2, WHEELBASE/2, DIAMETER/2, encoderPins, carPeriod, desiredRpms, feedbackRpms);
+Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, encoderPins, carPeriod);
 void updateW1A() { car.incEnc1A(); }
 void updateW1B() { car.incEnc1B(); }
 void updateW2A() { car.incEnc2A(); }
@@ -16,13 +13,14 @@ void updateW3B() { car.incEnc3B(); }
 void updateW4A() { car.incEnc4A(); }
 void updateW4B() { car.incEnc4B(); }
 
-int plan[5][4] = {
-    {},
-    {},
-    {},
-    {},
-    {}
-};
+unsigned long period = 3000;
+const int steps = 5;
+float carVelsPlan[steps][3] = {
+    {0, 0, 0},
+    {0.1, 0, 0},
+    {0, 0.1, 0},
+    {0, 0, 0.1},
+    {0, 0, 0}};
 
 void setup()
 {
@@ -41,5 +39,10 @@ void setup()
 
 void loop()
 {
-    car.setValues(250, 250, 250, 250);
+    unsigned long step = millis() / period;
+    if (step < steps)
+    {
+        car.setDesiredVelocity(carVelsPlan[step][0], carVelsPlan[step][1], carVelsPlan[step][2]);
+    }
+    car.update();
 }
