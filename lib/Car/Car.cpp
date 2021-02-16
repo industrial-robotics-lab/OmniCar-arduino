@@ -1,6 +1,13 @@
 #include "Car.h"
 
-Car::Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback)
+Car::Car(
+    float w,
+    float l,
+    float r,
+    int encoderPins[8],
+    int intervalMillis,
+    float *desired,
+    float *feedback)
 {
     desiredPtr = desired;
     feedbackPtr = feedback;
@@ -9,6 +16,9 @@ Car::Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback
     w2 = new Wheel(2, encoderPins[2], encoderPins[3], false);
     w3 = new Wheel(3, encoderPins[4], encoderPins[5], false);
     w4 = new Wheel(4, encoderPins[6], encoderPins[7], false);
+
+    H_0 = {-l-w,1,-1, l+w,1,1, l+w,1,-1, -l-w,1,1};
+    F = {-1.0/(l+w),1.0/(l+w),1.0/(l+w),-1.0/(l+w), 1,1,1,1, -1,1,-1,1};
 }
 Car::~Car()
 {

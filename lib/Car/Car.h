@@ -1,4 +1,9 @@
 #include "Wheel.h"
+#include "omnimath.h"
+
+#define TRACK 175.0
+#define WHEELBASE 165.0
+#define DIAMETER 60
 
 class Car
 {
@@ -9,9 +14,11 @@ private:
     Wheel *w2;
     Wheel *w3;
     Wheel *w4;
+    Matrix<4,3> H_0;
+    Matrix<3,4> F;
 
 public:
-    Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback);
+    Car(float w, float l, float r, int encoderPins[8], int intervalMillis, float *desired, float *feedback);
     ~Car();
     void setValues(double v1, double v2, double v3, double v4);
 
