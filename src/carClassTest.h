@@ -2,8 +2,7 @@
 #include "Car.h"
 
 int carPeriod = 40; // millis
-int encoderPins[8] = {18, 19, 20, 21, 50, 52, 51, 53};
-Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, encoderPins, carPeriod);
+Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, carPeriod);
 void updateW1A() { car.incEnc1A(); }
 void updateW1B() { car.incEnc1B(); }
 void updateW2A() { car.incEnc2A(); }
@@ -13,7 +12,7 @@ void updateW3B() { car.incEnc3B(); }
 void updateW4A() { car.incEnc4A(); }
 void updateW4B() { car.incEnc4B(); }
 
-unsigned long period = 3000;
+unsigned long period = 5000;
 const int steps = 5;
 float carVelsPlan[steps][3] = {
     {0, 0, 0},
@@ -39,10 +38,14 @@ void setup()
 
 void loop()
 {
-    unsigned long step = millis() / period;
-    if (step < steps)
-    {
-        car.setDesiredVelocity(carVelsPlan[step][0], carVelsPlan[step][1], carVelsPlan[step][2]);
-    }
+    // unsigned long step = millis() / period;
+    // if (step < steps)
+    // {
+    //     car.setDesiredVelocity(carVelsPlan[step][0], carVelsPlan[step][1], carVelsPlan[step][2]);
+    // }
+    
+    //                     t x y
+    car.setDesiredVelocity(0.01, 0, 0);
+    // Serial << car.carVelocity << '\n';
     car.update();
 }

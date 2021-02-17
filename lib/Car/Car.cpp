@@ -4,16 +4,15 @@ Car::Car(
     float w,
     float l,
     float r,
-    int minMillis)
+    int intervalMillis)
 {
-    minPeriod = minMillis;
-
-    w1 = new Wheel(1, 18, 19, false);
-    w2 = new Wheel(2, 20, 21, true);
-    w3 = new Wheel(3, 50, 52, true);
-    w4 = new Wheel(4, 51, 53, false);
+    w1 = new Wheel(1, 18, 19, false, intervalMillis);
+    w2 = new Wheel(2, 20, 21, true, intervalMillis);
+    w3 = new Wheel(3, 50, 52, true, intervalMillis);
+    w4 = new Wheel(4, 51, 53, false, intervalMillis);
 
     H_0 = {-l - w, 1, -1, l + w, 1, 1, l + w, 1, -1, -l - w, 1, 1};
+    H_0 /= r;
     F = {-1.0 / (l + w), 1.0 / (l + w), 1.0 / (l + w), -1.0 / (l + w), 1, 1, 1, 1, -1, 1, -1, 1};
     F *=  r / 4;
 
@@ -28,9 +27,9 @@ Car::~Car()
     delete w4;
 }
 
-void Car::setDesiredVelocity(float vX, float vY, float vTheta)
+void Car::setDesiredVelocity(float vTheta, float vX, float vY)
 {
-    desiredCarVelocity = {vX, vY, vTheta};
+    desiredCarVelocity = {vTheta, vX, vY};
 }
 
 void Car::findCarVelocity()
@@ -47,32 +46,25 @@ void Car::setValues(double v1, double v2, double v3, double v4)
     w4->setValue(v4);
 }
 
-void Car::reachCarVelocity(Matrix<3> carVel, float dt)
+void Car::reachCarVelocity(Matrix<3> carVel)
 {
     Matrix<4> wheelsVel = H_0 * carVel;
-    reachWheelsVelocity(wheelsVel, dt);
+    reachWheelsVelocity(wheelsVel);
 }
 
-void Car::reachWheelsVelocity(Matrix<4> wheelsVel, float dt)
+void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
 {
-    w1->reachVelocity(wheelsVel(0), dt);
-    w2->reachVelocity(wheelsVel(1), dt);
-    w3->reachVelocity(wheelsVel(2), dt);
-    w4->reachVelocity(wheelsVel(3), dt);
+    w1->reachVelocity(wheelsVel(0));
+    w2->reachVelocity(wheelsVel(1));
+    w3->reachVelocity(wheelsVel(2));
+    w4->reachVelocity(wheelsVel(3));
 }
 
 void Car::update()
 {
-    currentMillis = millis();
-    unsigned long diff = currentMillis - previousMillis;
-    if (diff >= minPeriod)
-    {
-        previousMillis = currentMillis;
-        float dt = (float)diff / 1000; // in seconds
-        findCarVelocity();
-        reachCarVelocity(desiredCarVelocity, dt);
-        resetEncoders();
-    }
+    findCarVelocity();
+    reachCarVelocity(desiredCarVelocity);
+    // resetEncoders();
 }
 
 void Car::resetEncoders()

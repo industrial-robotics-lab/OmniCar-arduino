@@ -2,36 +2,37 @@
 #include "Wheel.h"
 
 int intervalMillis = 40;
-unsigned long minPeriod = 40;
-unsigned long currentMillis = 0;
-unsigned long previousMillis = 0;
-Wheel w(1, 18, 19, false);
+Wheel w(1, 18, 19, false, intervalMillis);
 void triggerA() { w.triggerA(); }
 void triggerB() { w.triggerB(); }
 
-unsigned long period = 3000;
-unsigned long valuesSize = 3;
-double desiredValues[] = {0, 100, 0};
+unsigned long period = 5000;
+unsigned long valuesSize = 6;
+double desiredValues[] = {0, 1, 4, 6, 100, 0};
 double desiredVelocity = 0;
 
-void setup() {
-    attachInterrupt(digitalPinToInterrupt(w.getEncPinA()), triggerA, RISING);
-    attachInterrupt(digitalPinToInterrupt(w.getEncPinB()), triggerB, RISING);
-    // attachPCINT(digitalPinToPCINT(w.getEncPinA()), triggerA, RISING);
-    // attachPCINT(digitalPinToPCINT(w.getEncPinB()), triggerB, RISING);
+void setup()
+{
+  attachInterrupt(digitalPinToInterrupt(w.getEncPinA()), triggerA, RISING);
+  attachInterrupt(digitalPinToInterrupt(w.getEncPinB()), triggerB, RISING);
+  // attachPCINT(digitalPinToPCINT(w.getEncPinA()), triggerA, RISING);
+  // attachPCINT(digitalPinToPCINT(w.getEncPinB()), triggerB, RISING);
 
   Serial.begin(115200);
   Serial.setTimeout(intervalMillis);
 }
 
-void controlDesired() {
+void controlDesired()
+{
   unsigned long step = millis() / period;
-  if (step < valuesSize) {
+  if (step < valuesSize)
+  {
     desiredVelocity = desiredValues[step];
   }
 }
 
-void sendData() {
+void sendData()
+{
   Serial.print('$');
   Serial.print(desiredVelocity);
   Serial.print(' ');
@@ -41,16 +42,9 @@ void sendData() {
   Serial.print(';');
 }
 
-
-void loop() {
+void loop()
+{
   controlDesired();
-  currentMillis = millis();
-    unsigned long diff = currentMillis - previousMillis;
-    if (diff >= minPeriod)
-    {
-        previousMillis = currentMillis;
-        float dt = (float)diff / 1000; // in seconds
-        w.reachVelocity(desiredVelocity, dt);
-    }
+  w.reachVelocity(desiredVelocity);
   sendData();
 }
