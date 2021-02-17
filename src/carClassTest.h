@@ -45,7 +45,7 @@ void loop()
     // }
     
     //                     t x y
-    car.setDesiredVelocity(0.01, 0, 0);
+    car.setDesiredVelocity(-0.1, 0, 0);
     // Serial << car.carVelocity << '\n';
     car.update();
 }

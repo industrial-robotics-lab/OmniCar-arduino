@@ -8,7 +8,7 @@ void triggerB() { w.triggerB(); }
 
 unsigned long period = 5000;
 unsigned long valuesSize = 6;
-double desiredValues[] = {0, 1, 4, 6, 100, 0};
+double desiredValues[] = {0, 1, 4.5, -4.5, 2, 0};
 double desiredVelocity = 0;
 
 void setup()

@@ -5,7 +5,9 @@ Wheel::Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise, unsigned 
 {
     // 1900 - stability limit for motor 1
     // kP = 1140; kI = 3040; kD = 107; // position PID
-    kP = 50; kI = 0; kD = 0; // angular velocity PID
+
+    // kP = 50; kI = 800; kD = 5; // angular velocity PID (crazy on heap to zero)
+    kP = 50; kI = 500; kD = 0; // angular velocity PID
 
     this->motor = new Motor(motorNum);
     this->encoder = new Encoder(encPinA, encPinB, isClockwise);
