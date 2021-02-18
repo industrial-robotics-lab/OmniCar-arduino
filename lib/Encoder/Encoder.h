@@ -11,6 +11,7 @@ public:
   void triggerA();
   void triggerB();
   volatile long getTicks();
+  void reset();
   int getPinA();
   int getPinB();
 };

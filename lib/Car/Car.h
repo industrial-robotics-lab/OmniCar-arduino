@@ -1,18 +1,39 @@
 #include "Wheel.h"
+// #include "omnimath.h"
+#include <BasicLinearAlgebra.h>
+using namespace BLA;
+
+#define TRACK 175.0 / 1000     // mm to m
+#define WHEELBASE 165.0 / 1000 // mm to m
+#define DIAMETER 60.0 / 1000   // mm to m
 
 class Car
 {
 private:
-    float *desiredPtr;
-    float *feedbackPtr;
+    Matrix<3> *desiredCarVelocity;
+    Matrix<3> *feedbackCarVelocity;
     Wheel *w1;
     Wheel *w2;
     Wheel *w3;
     Wheel *w4;
+    Matrix<4, 3> H_0;
+    Matrix<3, 4> F;
+
+    // Matrix<3> carVelocity; // Vb
+    // Matrix<3> desiredCarVelocity;
+    Matrix<4> wheelsDisplacement;
+    void findCarVelocity();
+    void reachCarVelocity(Matrix<3> carVel);
+    void reachWheelsVelocity(Matrix<4> wheelsVel);
+
+    unsigned long currentMillis;
+    unsigned long previousMillis;
 
 public:
-    Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback);
+    Car(float w, float l, float r, int intervalMillis, Matrix<3> *desiredVelocity, Matrix<3> *feedbackVelocity);
     ~Car();
+    void setDesiredVelocity(float vX, float vY, float vTheta);
+    void setValues(double v1, double v2, double v3, double v4);
     void update();
 
     int getEncPin1A();

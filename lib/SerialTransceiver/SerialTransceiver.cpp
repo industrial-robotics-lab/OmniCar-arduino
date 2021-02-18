@@ -1,35 +1,37 @@
 #include "SerialTransceiver.h"
 
-SerialTransceiver::SerialTransceiver(float *desired, float *feedback)
+SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
 {
-    maxRpm = 400;
-    desiredPtr = desired;
-    feedbackPtr = feedback;
+    maxVelocity = 10;
+    desiredVelocity = desired;
+    feedbackVelocity = feedback;
 }
 
 void SerialTransceiver::rx()
 {
-    Serial.readBytesUntil('\n', buffer, 17);
+    Serial.readBytesUntil('\n', buffer, 13);
     for (int i = 0; i < 4; i++)
     {
         n1.b[i] = buffer[i];
         n2.b[i] = buffer[i + 4];
         n3.b[i] = buffer[i + 8];
-        n4.b[i] = buffer[i + 12];
+        // n4.b[i] = buffer[i + 12];
     }
     // Check message corruption
-    if (abs(n1.f) <= maxRpm && abs(n2.f) <= maxRpm && abs(n3.f) <= maxRpm && abs(n4.f) <= maxRpm)
+    // if (abs(n1.f) <= maxVelocity && abs(n2.f) <= maxVelocity && abs(n3.f) <= maxVelocity && abs(n4.f) <= maxVelocity)
+    if (abs(n1.f) <= maxVelocity && abs(n2.f) <= maxVelocity && abs(n3.f) <= maxVelocity)
     {
-        desiredPtr[0] = n1.f;
-        desiredPtr[1] = n2.f;
-        desiredPtr[2] = n3.f;
-        desiredPtr[3] = n4.f;
+        (*desiredVelocity)(0) = n1.f;
+        (*desiredVelocity)(1) = n2.f;
+        (*desiredVelocity)(2) = n3.f;
+        // desiredVelocity(3) = n4.f;
     }
 }
 
 void SerialTransceiver::tx()
 {
-    Serial.write((byte *)feedbackPtr, sizeof(float) * 4);
+    // Serial.write((byte *)&desiredVelocity, sizeof(float) * 3);
+    Serial.write((byte *)&feedbackVelocity, sizeof(float) * 3);
     Serial.write('\n');
 }
 

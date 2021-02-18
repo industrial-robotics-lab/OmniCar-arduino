@@ -1,14 +1,27 @@
 #include "Car.h"
 
-Car::Car(int encoderPins[8], int intervalMillis, float *desired, float *feedback)
+Car::Car(
+    float w,
+    float l,
+    float r,
+    int intervalMillis, 
+    Matrix<3> *desiredVelocity, 
+    Matrix<3> *feedbackVelocity)
 {
-    desiredPtr = desired;
-    feedbackPtr = feedback;
-    // int updateShift = intervalMillis / 4;
-    w1 = new Wheel(1, encoderPins[0], encoderPins[1], false);
-    w2 = new Wheel(2, encoderPins[2], encoderPins[3], false);
-    w3 = new Wheel(3, encoderPins[4], encoderPins[5], false);
-    w4 = new Wheel(4, encoderPins[6], encoderPins[7], false);
+    desiredCarVelocity = desiredVelocity;
+    feedbackCarVelocity = feedbackVelocity;
+    w1 = new Wheel(1, 18, 19, false, intervalMillis);
+    w2 = new Wheel(2, 20, 21, true, intervalMillis);
+    w3 = new Wheel(3, 50, 52, true, intervalMillis);
+    w4 = new Wheel(4, 51, 53, false, intervalMillis);
+
+    H_0 = {-l - w, 1, -1, l + w, 1, 1, l + w, 1, -1, -l - w, 1, 1};
+    H_0 /= r;
+    F = {-1.0 / (l + w), 1.0 / (l + w), 1.0 / (l + w), -1.0 / (l + w), 1, 1, 1, 1, -1, 1, -1, 1};
+    F *=  r / 4;
+
+    currentMillis = 0;
+    previousMillis = 0;
 }
 Car::~Car()
 {
@@ -18,7 +31,44 @@ Car::~Car()
     delete w4;
 }
 
-void Car::update() {}
+void Car::setDesiredVelocity(float vTheta, float vX, float vY)
+{
+    *desiredCarVelocity = {vTheta, vX, vY};
+}
+
+void Car::findCarVelocity()
+{
+    wheelsDisplacement = {w1->getTicks(), w2->getTicks(), w3->getTicks(), w4->getTicks()};
+    *feedbackCarVelocity = F * wheelsDisplacement;
+}
+
+void Car::setValues(double v1, double v2, double v3, double v4)
+{
+    w1->setValue(v1);
+    w2->setValue(v2);
+    w3->setValue(v3);
+    w4->setValue(v4);
+}
+
+void Car::reachCarVelocity(Matrix<3> carVel)
+{
+    Matrix<4> wheelsVel = H_0 * carVel;
+    reachWheelsVelocity(wheelsVel);
+}
+
+void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
+{
+    w1->reachVelocity(wheelsVel(0));
+    w2->reachVelocity(wheelsVel(1));
+    w3->reachVelocity(wheelsVel(2));
+    w4->reachVelocity(wheelsVel(3));
+}
+
+void Car::update()
+{
+    findCarVelocity();
+    reachCarVelocity(*desiredCarVelocity);
+}
 
 int Car::getEncPin1A() { return w1->getEncPinA(); }
 int Car::getEncPin1B() { return w1->getEncPinB(); }

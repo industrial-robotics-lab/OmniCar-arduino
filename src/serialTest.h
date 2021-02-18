@@ -1,9 +1,9 @@
 #include "SerialTransceiver.h"
 
-float desiredRpms[4] = {};  // init with zeros
-float feedbackRpms[4] = {}; // init with zeros
+Matrix<3> desiredCarVelocity;
+Matrix<3> feedbackCarVelocity;
 
-SerialTransceiver transceiver(desiredRpms, feedbackRpms);
+SerialTransceiver transceiver(desiredCarVelocity, feedbackCarVelocity);
 
 void setup()
 {
