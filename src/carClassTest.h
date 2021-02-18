@@ -5,7 +5,7 @@ Matrix<3> desiredCarVelocity;
 Matrix<3> feedbackCarVelocity;
 
 int carPeriod = 40; // millis
-Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, carPeriod, desiredCarVelocity, feedbackCarVelocity);
+Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, carPeriod, &desiredCarVelocity, &feedbackCarVelocity);
 void updateW1A() { car.incEnc1A(); }
 void updateW1B() { car.incEnc1B(); }
 void updateW2A() { car.incEnc2A(); }

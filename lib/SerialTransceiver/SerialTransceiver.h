@@ -6,8 +6,8 @@ class SerialTransceiver
 {
 private:
     int maxVelocity;
-    Matrix<3> desiredVelocity;
-    Matrix<3> feedbackVelocity;
+    Matrix<3> *desiredVelocity;
+    Matrix<3> *feedbackVelocity;
     byte buffer[13];
     union { float f; byte b[4]; } n1;
     union { float f; byte b[4]; } n2;
@@ -17,6 +17,6 @@ private:
     void tx();
 
 public:
-    SerialTransceiver(Matrix<3> &desired, Matrix<3> &feedback);
+    SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback);
     void talk();
 };

@@ -10,8 +10,8 @@ using namespace BLA;
 class Car
 {
 private:
-    Matrix<3> desiredCarVelocity;
-    Matrix<3> feedbackCarVelocity;
+    Matrix<3> *desiredCarVelocity;
+    Matrix<3> *feedbackCarVelocity;
     Wheel *w1;
     Wheel *w2;
     Wheel *w3;
@@ -30,7 +30,7 @@ private:
     unsigned long previousMillis;
 
 public:
-    Car(float w, float l, float r, int intervalMillis, Matrix<3> &desiredVelocity, Matrix<3> &feedbackVelocity);
+    Car(float w, float l, float r, int intervalMillis, Matrix<3> *desiredVelocity, Matrix<3> *feedbackVelocity);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);
     void setValues(double v1, double v2, double v3, double v4);

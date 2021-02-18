@@ -1,6 +1,6 @@
 #include "SerialTransceiver.h"
 
-SerialTransceiver::SerialTransceiver(Matrix<3> &desired, Matrix<3> &feedback)
+SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
 {
     maxVelocity = 10;
     desiredVelocity = desired;
@@ -21,15 +21,16 @@ void SerialTransceiver::rx()
     // if (abs(n1.f) <= maxVelocity && abs(n2.f) <= maxVelocity && abs(n3.f) <= maxVelocity && abs(n4.f) <= maxVelocity)
     if (abs(n1.f) <= maxVelocity && abs(n2.f) <= maxVelocity && abs(n3.f) <= maxVelocity)
     {
-        desiredVelocity(0) = n1.f;
-        desiredVelocity(1) = n2.f;
-        desiredVelocity(2) = n3.f;
+        (*desiredVelocity)(0) = n1.f;
+        (*desiredVelocity)(1) = n2.f;
+        (*desiredVelocity)(2) = n3.f;
         // desiredVelocity(3) = n4.f;
     }
 }
 
 void SerialTransceiver::tx()
 {
+    // Serial.write((byte *)&desiredVelocity, sizeof(float) * 3);
     Serial.write((byte *)&feedbackVelocity, sizeof(float) * 3);
     Serial.write('\n');
 }

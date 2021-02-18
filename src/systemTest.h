@@ -7,7 +7,7 @@ Matrix<3> desiredCarVelocity;
 Matrix<3> feedbackCarVelocity;
 
 int carPeriod = 40;
-Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, carPeriod, desiredCarVelocity, feedbackCarVelocity);
+Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, carPeriod, &desiredCarVelocity, &feedbackCarVelocity);
 void updateW1A() { car.incEnc1A(); }
 void updateW1B() { car.incEnc1B(); }
 void updateW2A() { car.incEnc2A(); }
@@ -16,7 +16,7 @@ void updateW3A() { car.incEnc3A(); }
 void updateW3B() { car.incEnc3B(); }
 void updateW4A() { car.incEnc4A(); }
 void updateW4B() { car.incEnc4B(); }
-SerialTransceiver transceiver(desiredCarVelocity, feedbackCarVelocity);
+SerialTransceiver transceiver(&desiredCarVelocity, &feedbackCarVelocity);
 
 Thread carThread = Thread();
 Thread serialThread = Thread();

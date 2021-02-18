@@ -5,8 +5,8 @@ Car::Car(
     float l,
     float r,
     int intervalMillis, 
-    Matrix<3> &desiredVelocity, 
-    Matrix<3> &feedbackVelocity)
+    Matrix<3> *desiredVelocity, 
+    Matrix<3> *feedbackVelocity)
 {
     desiredCarVelocity = desiredVelocity;
     feedbackCarVelocity = feedbackVelocity;
@@ -33,13 +33,13 @@ Car::~Car()
 
 void Car::setDesiredVelocity(float vTheta, float vX, float vY)
 {
-    desiredCarVelocity = {vTheta, vX, vY};
+    *desiredCarVelocity = {vTheta, vX, vY};
 }
 
 void Car::findCarVelocity()
 {
     wheelsDisplacement = {w1->getTicks(), w2->getTicks(), w3->getTicks(), w4->getTicks()};
-    feedbackCarVelocity = F * wheelsDisplacement;
+    *feedbackCarVelocity = F * wheelsDisplacement;
 }
 
 void Car::setValues(double v1, double v2, double v3, double v4)
@@ -67,7 +67,7 @@ void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
 void Car::update()
 {
     findCarVelocity();
-    reachCarVelocity(desiredCarVelocity);
+    reachCarVelocity(*desiredCarVelocity);
 }
 
 int Car::getEncPin1A() { return w1->getEncPinA(); }
