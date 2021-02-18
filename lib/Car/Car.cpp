@@ -4,8 +4,12 @@ Car::Car(
     float w,
     float l,
     float r,
-    int intervalMillis)
+    int intervalMillis, 
+    Matrix<3> &desiredVelocity, 
+    Matrix<3> &feedbackVelocity)
 {
+    desiredCarVelocity = desiredVelocity;
+    feedbackCarVelocity = feedbackVelocity;
     w1 = new Wheel(1, 18, 19, false, intervalMillis);
     w2 = new Wheel(2, 20, 21, true, intervalMillis);
     w3 = new Wheel(3, 50, 52, true, intervalMillis);
@@ -35,7 +39,7 @@ void Car::setDesiredVelocity(float vTheta, float vX, float vY)
 void Car::findCarVelocity()
 {
     wheelsDisplacement = {w1->getTicks(), w2->getTicks(), w3->getTicks(), w4->getTicks()};
-    carVelocity = F * wheelsDisplacement;
+    feedbackCarVelocity = F * wheelsDisplacement;
 }
 
 void Car::setValues(double v1, double v2, double v3, double v4)
@@ -64,15 +68,6 @@ void Car::update()
 {
     findCarVelocity();
     reachCarVelocity(desiredCarVelocity);
-    // resetEncoders();
-}
-
-void Car::resetEncoders()
-{
-    w1->resetEncoder();
-    w2->resetEncoder();
-    w3->resetEncoder();
-    w4->resetEncoder();
 }
 
 int Car::getEncPin1A() { return w1->getEncPinA(); }
