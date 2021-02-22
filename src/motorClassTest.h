@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "Motor.h"
 
-unsigned long period = 2000;
-unsigned long size = 13;
-int values[] = {32, 64, 128, 256, 128, 64, 32, 0, -32, -64, -128, -256, 0};
-Motor motor(4);
+unsigned long period = 3000;
+unsigned long size = 5;
+int values[] = {30, 40, 50, 60, 0};
+Motor motor(1);
 
 void setup() {
     Serial.begin(115200);
