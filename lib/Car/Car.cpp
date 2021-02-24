@@ -4,24 +4,27 @@ Car::Car(
     float w,
     float l,
     float r,
-    int intervalMillis, 
-    Matrix<3> *desiredVelocity, 
-    Matrix<3> *feedbackVelocity)
+    unsigned int wheelPeriod,
+    Matrix<3> *desiredVelocity,
+    Matrix<3> *feedbackPose)
 {
+    period = wheelPeriod;
+    G = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    // wheelsDisplacement.Fill(0);
     desiredCarVelocity = desiredVelocity;
-    feedbackCarVelocity = feedbackVelocity;
-    w1 = new Wheel(1, 18, 19, false, intervalMillis);
-    w2 = new Wheel(2, 20, 21, true, intervalMillis);
-    w3 = new Wheel(3, 50, 52, true, intervalMillis);
-    w4 = new Wheel(4, 51, 53, false, intervalMillis);
+    feedbackCarPose = feedbackPose;
+    w1 = new Wheel(1, 18, 19, false, wheelPeriod);
+    w2 = new Wheel(2, 20, 21, true, wheelPeriod);
+    w3 = new Wheel(3, 50, 52, true, wheelPeriod);
+    w4 = new Wheel(4, 51, 53, false, wheelPeriod);
 
     H_0 = {-l - w, 1, -1, l + w, 1, 1, l + w, 1, -1, -l - w, 1, 1};
     H_0 /= r;
     F = {-1.0 / (l + w), 1.0 / (l + w), 1.0 / (l + w), -1.0 / (l + w), 1, 1, 1, 1, -1, 1, -1, 1};
-    F *=  r / 4;
+    F *= r / 4;
 
-    currentMillis = 0;
-    previousMillis = 0;
+    // currentMillis = 0;
+    // previousMillis = 0;
 }
 Car::~Car()
 {
@@ -36,10 +39,15 @@ void Car::setDesiredVelocity(float vTheta, float vX, float vY)
     *desiredCarVelocity = {vTheta, vX, vY};
 }
 
-void Car::findCarVelocity()
+void Car::findCarPose()
 {
     wheelsDisplacement = {w1->getTicks(), w2->getTicks(), w3->getTicks(), w4->getTicks()};
-    *feedbackCarVelocity = F * wheelsDisplacement;
+    Matrix<3> vb = F * wheelsDisplacement;
+    Matrix<6> twist = {0, 0, vb(0), vb(1), vb(2), 0};
+    Matrix<4, 4> prevToCurrPose = vec6_to_SE3(twist);
+    G *= prevToCurrPose;
+    *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
+    // wheelsDisplacement.Fill(0);
 }
 
 void Car::setValues(double v1, double v2, double v3, double v4)
@@ -58,15 +66,24 @@ void Car::reachCarVelocity(Matrix<3> carVel)
 
 void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
 {
-    w1->reachVelocity(wheelsVel(0));
-    w2->reachVelocity(wheelsVel(1));
-    w3->reachVelocity(wheelsVel(2));
-    w4->reachVelocity(wheelsVel(3));
+    currentMillis = millis();
+    unsigned long diff = currentMillis - previousMillis;
+    if (diff > period)
+    {
+        previousMillis = currentMillis;
+
+        findCarPose();
+        double dt = (double)diff / 1000; // millis to seconds
+        w1->reachVelocity(wheelsVel(0), dt);
+        w2->reachVelocity(wheelsVel(1), dt);
+        w3->reachVelocity(wheelsVel(2), dt);
+        w4->reachVelocity(wheelsVel(3), dt);
+    }
 }
 
 void Car::update()
 {
-    findCarVelocity();
+    // findCarPose();
     reachCarVelocity(*desiredCarVelocity);
 }
 

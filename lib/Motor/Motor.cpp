@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Motor.h"
 
-Motor::Motor(int number) {
+Motor::Motor(unsigned int number) {
   motor = new AF_DCMotor(number);
 }
 Motor::~Motor() { delete motor; }

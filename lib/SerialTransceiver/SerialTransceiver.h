@@ -5,9 +5,9 @@ using namespace BLA;
 class SerialTransceiver
 {
 private:
-    int maxVelocity;
+    int maxValue;
     Matrix<3> *desiredVelocity;
-    Matrix<3> *feedbackVelocity;
+    Matrix<3> *feedbackPose;
     byte buffer[13];
     union { float f; byte b[4]; } n1;
     union { float f; byte b[4]; } n2;

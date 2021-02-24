@@ -1,7 +1,10 @@
 #include "Arduino.h"
 #include "Encoder.h"
 
-Encoder::Encoder(int pinA, int pinB, bool isClockwise)
+Encoder::Encoder(
+    unsigned int pinA,
+    unsigned int pinB,
+    bool isClockwise)
 {
   pinMode(pinA, INPUT_PULLUP);
   pinMode(pinB, INPUT_PULLUP);

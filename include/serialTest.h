@@ -1,9 +1,9 @@
 #include "SerialTransceiver.h"
 
 Matrix<3> desiredCarVelocity;
-Matrix<3> feedbackCarVelocity;
+Matrix<3> feedbackCarPose;
 
-SerialTransceiver transceiver(desiredCarVelocity, feedbackCarVelocity);
+SerialTransceiver transceiver(&desiredCarVelocity, &feedbackCarPose);
 
 void setup()
 {

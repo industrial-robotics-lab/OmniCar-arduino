@@ -1,13 +1,16 @@
 class Encoder
 {
 private:
-  int pinA;
-  int pinB;
+  unsigned int pinA;
+  unsigned int pinB;
   volatile long ticks = 0;
   int increment = 0;
 
 public:
-  Encoder(int pinA, int pinB, bool isClockwise);
+  Encoder(
+      unsigned int pinA,
+      unsigned int pinB,
+      bool isClockwise);
   void triggerA();
   void triggerB();
   volatile long getTicks();

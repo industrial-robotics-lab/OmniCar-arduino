@@ -10,7 +10,7 @@ private:
   double pidSetpoint, pidFeedback, pidOutput;
   double kP, kI, kD;
   double currentAngularVelocity;
-  
+
   Motor *motor;
   Encoder *encoder;
   PID *pid;
@@ -20,10 +20,15 @@ private:
   unsigned long previousMillis = 0;
 
 public:
-  Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise, unsigned int intervalMillis);
+  Wheel(
+      unsigned int motorNum,
+      unsigned int encPinA,
+      unsigned int encPinB,
+      bool isClockwise,
+      unsigned int intervalMillis);
   ~Wheel();
   void setValue(int value);
-  void reachVelocity(double desiredVelocity);
+  void reachVelocity(double desiredVelocity, double dt);
   void triggerA();
   void triggerB();
   void resetEncoder();

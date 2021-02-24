@@ -5,6 +5,6 @@
 // #include "motorClassTest.h"
 // #include "encoderClassTest.h"
 // #include "wheelClassTest.h"
-// #include "carClassTest.h"
+#include "carClassTest.h"
 
-#include "finalSystem.h"
+// #include "finalSystem.h"

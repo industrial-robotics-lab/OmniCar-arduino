@@ -1,7 +1,5 @@
 #include "Wheel.h"
-// #include "omnimath.h"
-#include <BasicLinearAlgebra.h>
-using namespace BLA;
+#include "omnimath.h"
 
 #define TRACK 175.0 / 1000     // mm to m
 #define WHEELBASE 165.0 / 1000 // mm to m
@@ -10,27 +8,32 @@ using namespace BLA;
 class Car
 {
 private:
+    unsigned int period;
+    unsigned long currentMillis;
+    unsigned long previousMillis;
     Matrix<3> *desiredCarVelocity;
-    Matrix<3> *feedbackCarVelocity;
+    Matrix<3> *feedbackCarPose;
+    Matrix<4, 4> G; // global transformation
     Wheel *w1;
     Wheel *w2;
     Wheel *w3;
     Wheel *w4;
     Matrix<4, 3> H_0;
     Matrix<3, 4> F;
-
-    // Matrix<3> carVelocity; // Vb
-    // Matrix<3> desiredCarVelocity;
     Matrix<4> wheelsDisplacement;
-    void findCarVelocity();
+
+    void findCarPose();
     void reachCarVelocity(Matrix<3> carVel);
     void reachWheelsVelocity(Matrix<4> wheelsVel);
 
-    unsigned long currentMillis;
-    unsigned long previousMillis;
-
 public:
-    Car(float w, float l, float r, int intervalMillis, Matrix<3> *desiredVelocity, Matrix<3> *feedbackVelocity);
+    Car(
+        float w,
+        float l,
+        float r,
+        unsigned int wheelPeriod,
+        Matrix<3> *desiredVelocity,
+        Matrix<3> *feedbackPose);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);
     void setValues(double v1, double v2, double v3, double v4);

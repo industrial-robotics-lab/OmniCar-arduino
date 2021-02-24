@@ -2,9 +2,9 @@
 
 SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
 {
-    maxVelocity = 10;
+    maxValue = 10; // wheel can't rotate faster than 10 m/s
     desiredVelocity = desired;
-    feedbackVelocity = feedback;
+    feedbackPose = feedback;
 }
 
 void SerialTransceiver::rx()
@@ -18,8 +18,7 @@ void SerialTransceiver::rx()
         // n4.b[i] = buffer[i + 12];
     }
     // Check message corruption
-    // if (abs(n1.f) <= maxVelocity && abs(n2.f) <= maxVelocity && abs(n3.f) <= maxVelocity && abs(n4.f) <= maxVelocity)
-    if (abs(n1.f) <= maxVelocity && abs(n2.f) <= maxVelocity && abs(n3.f) <= maxVelocity)
+    if (abs(n1.f) <= maxValue && abs(n2.f) <= maxValue && abs(n3.f) <= maxValue /* && abs(n4.f) <= maxValue */)
     {
         (*desiredVelocity)(0) = n1.f;
         (*desiredVelocity)(1) = n2.f;
@@ -31,7 +30,7 @@ void SerialTransceiver::rx()
 void SerialTransceiver::tx()
 {
     // Serial.write((byte *)desiredVelocity, sizeof(float) * 3);
-    Serial.write((byte *)feedbackVelocity, sizeof(float) * 3);
+    Serial.write((byte *)feedbackPose, sizeof(float) * 3);
     Serial.write('\n');
 }
 

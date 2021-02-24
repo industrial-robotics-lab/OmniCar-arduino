@@ -1,7 +1,12 @@
 #include "Arduino.h"
 #include "Wheel.h"
 
-Wheel::Wheel(int motorNum, int encPinA, int encPinB, bool isClockwise, unsigned int intervalMillis)
+Wheel::Wheel(
+    unsigned int motorNum, 
+    unsigned int encPinA, 
+    unsigned int encPinB, 
+    bool isClockwise, 
+    unsigned int intervalMillis)
 {
     // 1900 - stability limit for motor 1
     // kP = 1140; kI = 3040; kD = 107; // position PID
@@ -34,24 +39,23 @@ void Wheel::setValue(int value)
     motor->setValue(value);
 }
 
-void Wheel::reachVelocity(double desiredVelocity)
+void Wheel::reachVelocity(double desiredVelocity, double dt)
 {
-    currentMillis = millis();
-    unsigned long diff = currentMillis - previousMillis;
-    if (diff > interval)
-    {
-        previousMillis = currentMillis;
+    // currentMillis = millis();
+    // unsigned long diff = currentMillis - previousMillis;
+    // if (diff > interval)
+    // {
+    //     previousMillis = currentMillis;
 
         double revolutions = (double)encoder->getTicks() / TICKS_PER_REV;
         resetEncoder();
         // double linearDistance = PI * DIAMETER * revolutions;
-        double dt = (double)diff / 1000; // millis to seconds
         currentAngularVelocity = revolutions / dt;
         pidFeedback = currentAngularVelocity;
         pidSetpoint = desiredVelocity;
         pid->Compute();
         motor->setValue(pidOutput);
-    }
+    // }
 }
 
 void Wheel::triggerA() { encoder->triggerA(); }
