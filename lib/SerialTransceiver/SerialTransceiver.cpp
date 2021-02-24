@@ -30,8 +30,8 @@ void SerialTransceiver::rx()
 
 void SerialTransceiver::tx()
 {
-    // Serial.write((byte *)&desiredVelocity, sizeof(float) * 3);
-    Serial.write((byte *)&feedbackVelocity, sizeof(float) * 3);
+    // Serial.write((byte *)desiredVelocity, sizeof(float) * 3);
+    Serial.write((byte *)feedbackVelocity, sizeof(float) * 3);
     Serial.write('\n');
 }
 
