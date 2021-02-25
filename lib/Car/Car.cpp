@@ -41,13 +41,23 @@ void Car::setDesiredVelocity(float vTheta, float vX, float vY)
 
 void Car::findCarPose()
 {
-    wheelsDisplacement = {w1->getTicks(), w2->getTicks(), w3->getTicks(), w4->getTicks()};
+    wheelsDisplacement = {
+        (double)w1->getTicks() / TICKS_PER_REV,
+        (double)w2->getTicks() / TICKS_PER_REV,
+        (double)w3->getTicks() / TICKS_PER_REV,
+        (double)w4->getTicks() / TICKS_PER_REV};
     Matrix<3> vb = F * wheelsDisplacement;
     Matrix<6> twist = {0, 0, vb(0), vb(1), vb(2), 0};
     Matrix<4, 4> prevToCurrPose = vec6_to_SE3(twist);
+    // *feedbackCarPose = {atan2(prevToCurrPose(1, 0), prevToCurrPose(0, 0)), prevToCurrPose(0, 3), prevToCurrPose(1, 3)};
     G *= prevToCurrPose;
     *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
-    // wheelsDisplacement.Fill(0);
+    Serial.print("Theta: ");
+    Serial.print((*feedbackCarPose)(0));
+    Serial.print("; X: ");
+    Serial.print((*feedbackCarPose)(1));
+    Serial.print("; Y: ");
+    Serial.println((*feedbackCarPose)(2));
 }
 
 void Car::setValues(double v1, double v2, double v3, double v4)

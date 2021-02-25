@@ -35,6 +35,6 @@ void loop()
 {
     //                     t x y
     car.setDesiredVelocity(0, 0.05, 0);
-    Serial << feedbackCarPose << '\n';
+    // Serial << feedbackCarPose << '\n';
     car.update();
 }
