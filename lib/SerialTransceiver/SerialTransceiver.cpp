@@ -1,10 +1,9 @@
 #include "SerialTransceiver.h"
 
 SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
+: desiredVelocity(desired), feedbackPose(feedback)
 {
     maxValue = 10; // wheel can't rotate faster than 10 m/s
-    desiredVelocity = desired;
-    feedbackPose = feedback;
 }
 
 void SerialTransceiver::rx()

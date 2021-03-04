@@ -7,6 +7,7 @@ Wheel::Wheel(
     unsigned int encPinB, 
     bool isClockwise, 
     unsigned int intervalMillis)
+    : interval(intervalMillis)
 {
     // 1900 - stability limit for motor 1
     // kP = 1140; kI = 3040; kD = 107; // position PID
@@ -23,7 +24,6 @@ Wheel::Wheel(
     // pid->SetTunings(1, 2, 3);
     // pid->SetControllerDirection(DIRECT);
 
-    interval = intervalMillis;
     currentMillis = 0;
     previousMillis = 0;
 }

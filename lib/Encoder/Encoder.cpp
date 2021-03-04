@@ -5,11 +5,10 @@ Encoder::Encoder(
     unsigned int pinA,
     unsigned int pinB,
     bool isClockwise)
+    : pinA(pinA), pinB(pinB)
 {
   pinMode(pinA, INPUT_PULLUP);
   pinMode(pinB, INPUT_PULLUP);
-  this->pinA = pinA;
-  this->pinB = pinB;
   if (isClockwise)
   {
     increment = 1;

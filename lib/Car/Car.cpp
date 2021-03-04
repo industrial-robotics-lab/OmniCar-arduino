@@ -7,12 +7,12 @@ Car::Car(
     unsigned int wheelPeriod,
     Matrix<3> *desiredVelocity,
     Matrix<3> *feedbackPose)
+    : 
+    period(wheelPeriod), 
+    desiredCarVelocity(desiredVelocity),
+    feedbackCarPose(feedbackPose)
 {
-    period = wheelPeriod;
     G = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-    // wheelsDisplacement.Fill(0);
-    desiredCarVelocity = desiredVelocity;
-    feedbackCarPose = feedbackPose;
     w1 = new Wheel(1, 18, 19, false, wheelPeriod);
     w2 = new Wheel(2, 20, 21, true, wheelPeriod);
     w3 = new Wheel(3, 50, 52, true, wheelPeriod);
@@ -22,9 +22,6 @@ Car::Car(
     H_0 /= r;
     F = {-1.0 / (l + w), 1.0 / (l + w), 1.0 / (l + w), -1.0 / (l + w), 1, 1, 1, 1, -1, 1, -1, 1};
     F *= r / 4;
-
-    // currentMillis = 0;
-    // previousMillis = 0;
 }
 Car::~Car()
 {
