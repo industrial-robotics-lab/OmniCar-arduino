@@ -1,4 +1,4 @@
-#include "SerialTransceiver.h"
+#include "Arduino.h"
 
 static const uint8_t crc_table[] = {
     0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31,
@@ -47,7 +47,7 @@ union { float f; byte b[4]; } n3;
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.setTimeout(1000);
   pinMode(LED_BUILTIN, OUTPUT);
 }
