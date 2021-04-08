@@ -39,7 +39,7 @@ void setup()
     desiredCarVelocity.Fill(0);
     feedbackCarPose.Fill(0);
 
-    Serial.begin(115200);
+    Serial.begin(38400);
     Serial.setTimeout(1000);
 
     carThread.onRun(updateCar);

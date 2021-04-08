@@ -1,7 +1,7 @@
 #include "SerialTransceiver.h"
 
 SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
-: desiredVelocity(desired), feedbackPose(feedback)
+    : desiredVelocity(desired), feedbackPose(feedback)
 {
     maxValue = 10; // wheel can't rotate faster than 10 m/s
 }
@@ -14,23 +14,24 @@ void SerialTransceiver::rx()
         n1.b[i] = buffer[i];
         n2.b[i] = buffer[i + 4];
         n3.b[i] = buffer[i + 8];
-        // n4.b[i] = buffer[i + 12];
     }
     // Check message corruption
-    if (abs(n1.f) <= maxValue && abs(n2.f) <= maxValue && abs(n3.f) <= maxValue /* && abs(n4.f) <= maxValue */)
+    checksum = crc8((uint8_t *)buffer, 12);
+    if (checksum == buffer[12])
     {
         (*desiredVelocity)(0) = n1.f;
         (*desiredVelocity)(1) = n2.f;
         (*desiredVelocity)(2) = n3.f;
-        // desiredVelocity(3) = n4.f;
     }
 }
 
 void SerialTransceiver::tx()
 {
-    // Serial.write((byte *)desiredVelocity, sizeof(float) * 3);
+    checksum = crc8((uint8_t *)feedbackPose, 12);
     Serial.write((byte *)feedbackPose, sizeof(float) * 3);
+    Serial.write(&checksum, sizeof(byte));
     Serial.write('\n');
+    Serial.flush(); // waits for the transmission to complete
 }
 
 void SerialTransceiver::talk()
