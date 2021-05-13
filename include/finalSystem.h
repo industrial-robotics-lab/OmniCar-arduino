@@ -40,7 +40,7 @@ void setup()
     feedbackCarPose.Fill(0);
 
     Serial.begin(38400);
-    Serial.setTimeout(1000);
+    Serial.setTimeout(100);
 
     carThread.onRun(updateCar);
     serialThread.onRun(talkSerial);

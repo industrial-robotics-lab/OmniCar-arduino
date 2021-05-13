@@ -1,19 +1,20 @@
 #include <Arduino.h>
 #include <BasicLinearAlgebra.h>
+#include "omnimath.h"
 
 using namespace BLA;
 
 class SerialTransceiver
 {
 private:
-    int maxValue;
+    float maxLinSpeed;
+    float maxAngSpeed;
+    uint8_t controlVec[3] = {127, 127, 127};
     Matrix<3> *desiredVelocity;
     Matrix<3> *feedbackPose;
     byte buffer[14];
-    byte checksum;
-    union { float f; byte b[4]; } n1;
-    union { float f; byte b[4]; } n2;
-    union { float f; byte b[4]; } n3;
+    byte readChecksum;
+    byte calcChecksum;
     void rx();
     void tx();
 

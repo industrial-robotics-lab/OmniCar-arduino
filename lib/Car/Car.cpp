@@ -49,12 +49,6 @@ void Car::findCarPose()
     // *feedbackCarPose = {atan2(prevToCurrPose(1, 0), prevToCurrPose(0, 0)), prevToCurrPose(0, 3), prevToCurrPose(1, 3)};
     G *= prevToCurrPose;
     *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
-    Serial.print("Theta: ");
-    Serial.print((*feedbackCarPose)(0));
-    Serial.print("; X: ");
-    Serial.print((*feedbackCarPose)(1));
-    Serial.print("; Y: ");
-    Serial.println((*feedbackCarPose)(2));
 }
 
 void Car::setValues(double v1, double v2, double v3, double v4)

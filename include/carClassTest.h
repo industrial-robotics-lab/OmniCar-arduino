@@ -27,14 +27,18 @@ void setup()
     attachPCINT(digitalPinToPCINT(car.getEncPin4A()), updateW4A, RISING);
     attachPCINT(digitalPinToPCINT(car.getEncPin4B()), updateW4B, RISING);
 
-    Serial.begin(115200);
-    Serial.setTimeout(1000);
+    Serial.begin(38400);
+    Serial.setTimeout(100);
 }
 
 void loop()
 {
-    //                     t x y
+    //                     t  x     y
     car.setDesiredVelocity(0, 0.05, 0);
-    // Serial << feedbackCarPose << '\n';
+    auto t1 = millis();
     car.update();
+    auto t2 = millis();
+    Serial.print("Time for car update: ");
+    Serial.println(t2-t1);
+    // delay(1000);
 }
