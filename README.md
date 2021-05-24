@@ -11,7 +11,7 @@ Chosen configuration has only 4 free interrupt pins (other ones are used or unre
 # Structure
 The project structure consists of two blocks: car control (`Car`) and serial communication (`SerialTransceiver`).
 
-`Car` controls 4 wheels with tuned PID-controllers and calculates robot velocity by solving backward kinematics problem and robot position by solving forward kinematics problem (dedicated theory described in [Modern Robotics](http://hades.mech.northwestern.edu/images/7/7f/MR.pdf) book, p.519).
+`Car` controls 4 wheels with tuned PID-controllers and calculates robot velocity by solving inverse kinematics problem and robot position by solving forward kinematics problem (dedicated theory described in [Modern Robotics](http://hades.mech.northwestern.edu/images/7/7f/MR.pdf) book, p.519).
 
 `SerialTransceiver` receives control vector from Raspberry Pi (3 bytes) and transmits robot position in global coordinate system (12 bytes). It uses CRC8 algorithm to check message integrity.
 

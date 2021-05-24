@@ -7,10 +7,9 @@ Car::Car(
     unsigned int wheelPeriod,
     Matrix<3> *desiredVelocity,
     Matrix<3> *feedbackPose)
-    : 
-    period(wheelPeriod), 
-    desiredCarVelocity(desiredVelocity),
-    feedbackCarPose(feedbackPose)
+    : period(wheelPeriod),
+      desiredCarVelocity(desiredVelocity),
+      feedbackCarPose(feedbackPose)
 {
     G = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     w1 = new Wheel(1, 18, 19, false, wheelPeriod);
@@ -46,7 +45,6 @@ void Car::findCarPose()
     Matrix<3> vb = F * wheelsDisplacement;
     Matrix<6> twist = {0, 0, vb(0), vb(1), vb(2), 0};
     Matrix<4, 4> prevToCurrPose = vec6_to_SE3(twist);
-    // *feedbackCarPose = {atan2(prevToCurrPose(1, 0), prevToCurrPose(0, 0)), prevToCurrPose(0, 3), prevToCurrPose(1, 3)};
     G *= prevToCurrPose;
     *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
 }
@@ -84,7 +82,7 @@ void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
 
 void Car::update()
 {
-    // findCarPose();
+    findCarPose();
     reachCarVelocity(*desiredCarVelocity);
 }
 

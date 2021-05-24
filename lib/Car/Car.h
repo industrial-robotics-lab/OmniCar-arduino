@@ -22,8 +22,8 @@ private:
     Matrix<3, 4> F;
     Matrix<4> wheelsDisplacement;
 
-    void findCarPose();
-    void reachCarVelocity(Matrix<3> carVel);
+    void findCarPose(); // forward kinematics
+    void reachCarVelocity(Matrix<3> carVel); // inverse kinematics
     void reachWheelsVelocity(Matrix<4> wheelsVel);
 
 public:
