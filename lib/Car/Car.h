@@ -3,7 +3,6 @@
 
 #define TRACK 175.0 / 1000     // mm to m
 #define WHEELBASE 165.0 / 1000 // mm to m
-#define DIAMETER 60.0 / 1000   // mm to m
 
 class Car
 {

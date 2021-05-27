@@ -1,5 +1,5 @@
 # Introduction
-This repository is part of [OmniCar project](https://divelix.github.io/OmniCar/) and represents program for Arduino MEGA that solves omni platform kinematics to get wheel odometry solution and reach desired velocity.
+This repository is part of [OmniCar project](https://divelix.github.io/OmniCar/) and represents program for Arduino MEGA that solves omni platform kinematics to get wheel odometry solution and reach desired velocity. It utilitizes PID-controllers based on feedback from incremental encoders to control JGB37-520 DC motors. Also it can communicate via UART in half-duplex mode.
 
 # Showcase
 Arduino MEGA runs code of this repository and placed on the 1st floor of the mobile platform. It has `Freeduino Motor Shield V3` and special power board (reduces wiring) mounted on top of it.

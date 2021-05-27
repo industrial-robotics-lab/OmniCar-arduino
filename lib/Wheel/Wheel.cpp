@@ -2,10 +2,10 @@
 #include "Wheel.h"
 
 Wheel::Wheel(
-    unsigned int motorNum, 
-    unsigned int encPinA, 
-    unsigned int encPinB, 
-    bool isClockwise, 
+    unsigned int motorNum,
+    unsigned int encPinA,
+    unsigned int encPinB,
+    bool isClockwise,
     unsigned int intervalMillis)
     : interval(intervalMillis)
 {
@@ -13,7 +13,9 @@ Wheel::Wheel(
     // kP = 1140; kI = 3040; kD = 107; // position PID
 
     // kP = 50; kI = 800; kD = 5; // angular velocity PID (crazy on heap to zero)
-    kP = 50; kI = 500; kD = 0; // angular velocity PID
+    kP = 50;
+    kI = 500;
+    kD = 0; // angular velocity PID
 
     this->motor = new Motor(motorNum);
     this->encoder = new Encoder(encPinA, encPinB, isClockwise);
@@ -39,23 +41,16 @@ void Wheel::setValue(int value)
     motor->setValue(value);
 }
 
-void Wheel::reachVelocity(double desiredVelocity, double dt)
+void Wheel::reachLinearVelocity(double desiredLinearVelocity, double dt)
 {
-    // currentMillis = millis();
-    // unsigned long diff = currentMillis - previousMillis;
-    // if (diff > interval)
-    // {
-    //     previousMillis = currentMillis;
-
-        double revolutions = (double)encoder->getTicks() / TICKS_PER_REV;
-        resetEncoder();
-        // double linearDistance = PI * DIAMETER * revolutions;
-        currentAngularVelocity = revolutions / dt;
-        pidFeedback = currentAngularVelocity;
-        pidSetpoint = desiredVelocity;
-        pid->Compute();
-        motor->setValue(pidOutput);
-    // }
+    revolutions = (double)encoder->getTicks() / TICKS_PER_REV;
+    resetEncoder();
+    linearDistance = PI * DIAMETER * revolutions;
+    currentLinearVelocity = linearDistance / dt;
+    pidFeedback = currentLinearVelocity;
+    pidSetpoint = desiredLinearVelocity;
+    pid->Compute();
+    motor->setValue(pidOutput);
 }
 
 void Wheel::triggerA() { encoder->triggerA(); }
@@ -63,7 +58,7 @@ void Wheel::triggerB() { encoder->triggerB(); }
 void Wheel::resetEncoder() { encoder->reset(); }
 
 double Wheel::getPidOutput() { return pidOutput; }
-double Wheel::getCurrentVelocity() { return currentAngularVelocity; }
+double Wheel::getCurrentLinearVelocity() { return currentLinearVelocity; }
 long Wheel::getTicks() { return encoder->getTicks(); }
 int Wheel::getEncPinA() { return encoder->getPinA(); }
 int Wheel::getEncPinB() { return encoder->getPinB(); }

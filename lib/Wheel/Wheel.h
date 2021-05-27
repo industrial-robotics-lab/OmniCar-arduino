@@ -3,13 +3,16 @@
 #include <PID_v1.h>
 
 #define TICKS_PER_REV 720
+#define DIAMETER 60.0 / 1000   // mm to m
 
 class Wheel
 {
 private:
   double pidSetpoint, pidFeedback, pidOutput;
   double kP, kI, kD;
-  double currentAngularVelocity;
+  double currentLinearVelocity;
+  double revolutions;
+  double linearDistance;
 
   Motor *motor;
   Encoder *encoder;
@@ -28,13 +31,13 @@ public:
       unsigned int intervalMillis);
   ~Wheel();
   void setValue(int value);
-  void reachVelocity(double desiredVelocity, double dt);
+  void reachLinearVelocity(double desiredVelocity, double dt);
   void triggerA();
   void triggerB();
   void resetEncoder();
 
   double getPidOutput();
-  double getCurrentVelocity();
+  double getCurrentLinearVelocity();
   long getTicks();
   int getEncPinA();
   int getEncPinB();

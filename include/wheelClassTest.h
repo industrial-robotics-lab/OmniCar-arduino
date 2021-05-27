@@ -38,13 +38,13 @@ void sendData()
   Serial.print(' ');
   Serial.print(w.getPidOutput());
   Serial.print(' ');
-  Serial.print(w.getCurrentVelocity());
+  Serial.print(w.getCurrentLinearVelocity());
   Serial.print(';');
 }
 
 void loop()
 {
   controlDesired();
-  w.reachVelocity(desiredVelocity);
+  w.reachLinearVelocity(desiredVelocity);
   sendData();
 }

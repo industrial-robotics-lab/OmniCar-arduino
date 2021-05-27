@@ -73,16 +73,15 @@ void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
 
         findCarPose();
         double dt = (double)diff / 1000; // millis to seconds
-        w1->reachVelocity(wheelsVel(0), dt);
-        w2->reachVelocity(wheelsVel(1), dt);
-        w3->reachVelocity(wheelsVel(2), dt);
-        w4->reachVelocity(wheelsVel(3), dt);
+        w1->reachLinearVelocity(wheelsVel(0), dt);
+        w2->reachLinearVelocity(wheelsVel(1), dt);
+        w3->reachLinearVelocity(wheelsVel(2), dt);
+        w4->reachLinearVelocity(wheelsVel(3), dt);
     }
 }
 
 void Car::update()
 {
-    findCarPose();
     reachCarVelocity(*desiredCarVelocity);
 }
 
