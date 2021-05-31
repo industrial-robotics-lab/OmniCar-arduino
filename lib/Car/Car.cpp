@@ -59,7 +59,9 @@ void Car::setValues(int v1, int v2, int v3, int v4)
 
 void Car::reachCarVelocity(Matrix<3> carVel)
 {
-    Matrix<4> wheelsVel = H_0 * carVel;
+    float fi = carVel(0);
+    Matrix<3, 3> R_fi = {1, 0, 0, 0, cos(fi), sin(fi), 0, -sin(fi), cos(fi)};
+    Matrix<4> wheelsVel = H_0 * R_fi * carVel;
     reachWheelsVelocity(wheelsVel);
 }
 

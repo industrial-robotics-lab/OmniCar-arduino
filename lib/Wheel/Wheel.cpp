@@ -11,9 +11,14 @@ Wheel::Wheel(
     // kP = 1140; kI = 3040; kD = 107; // position PID
 
     // kP = 50; kI = 800; kD = 5; // angular velocity PID (crazy on heap to zero)
-    kP = 50;
-    kI = 500;
-    kD = 0; // angular velocity PID
+
+    // kP = 50;
+    // kI = 500;
+    // kD = 0; // angular velocity PID
+    
+    kP = 300;
+    kI = 800;
+    kD = 5; // linear velocity PID
 
     this->motor = new Motor(motorNum);
     this->encoder = new Encoder(encPinA, encPinB, isClockwise);
@@ -41,8 +46,10 @@ void Wheel::setValue(int value)
 
 void Wheel::reachLinearVelocity(double desiredLinearVelocity, double dt)
 {
-    revolutions = (double)encoder->getTicks() / TICKS_PER_REV;
+    ticks = encoder->getTicks(); // max ticks for 40 millis period = ~130-140
     resetEncoder();
+    if (abs(ticks) > 150) return;
+    revolutions = (double)ticks / TICKS_PER_REV;
     linearDistance = PI * DIAMETER * revolutions;
     currentLinearVelocity = linearDistance / dt;
     pidFeedback = currentLinearVelocity;

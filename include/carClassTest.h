@@ -4,7 +4,6 @@
 Matrix<3> desiredCarVelocity;
 Matrix<3> feedbackCarPose;
 
-// int carPeriod = 200; // millis
 int wheelPeriod = 40; // millis
 Car car(TRACK / 2, WHEELBASE / 2, DIAMETER / 2, wheelPeriod, &desiredCarVelocity, &feedbackCarPose);
 void updateW1A() { car.incEnc1A(); }

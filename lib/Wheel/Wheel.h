@@ -11,7 +11,6 @@ private:
   double pidSetpoint, pidFeedback, pidOutput;
   double kP, kI, kD;
   double currentLinearVelocity;
-  double revolutions;
   double linearDistance;
 
   Motor *motor;
@@ -22,6 +21,8 @@ private:
   unsigned long previousMillis = 0;
 
 public:
+  long ticks; // make private
+  double revolutions; // make private
   Wheel(
       unsigned int motorNum,
       unsigned int encPinA,

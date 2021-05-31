@@ -1,15 +1,18 @@
 #include <PinChangeInterrupt.h>
 #include "Wheel.h"
 
-int intervalMillis = 40;
-Wheel w(1, 18, 19, false);
+unsigned long wheelPeriod = 40;
+Wheel w(1, 18, 19, false); // max speed == ~0.9 m/s
+// Wheel w(2, 20, 21, true); // max speed == ~0. m/s
+// Wheel w(3, 50, 52, true); // max speed == ~0.85 m/s
+// Wheel w(4, 51, 53, false); // max speed == ~0.9 m/s
 void triggerA() { w.triggerA(); }
 void triggerB() { w.triggerB(); }
 
-unsigned long period = 5000;
-unsigned long valuesSize = 6;
-double desiredValues[] = {0, 1, 4.5, -4.5, 2, 0};
-double desiredVelocity = 0;
+unsigned long period = 2000;
+double desiredLinearVelocity = 0;
+unsigned long step;
+unsigned long prev;
 
 unsigned long currentMillis;
 unsigned long previousMillis;
@@ -22,41 +25,52 @@ void setup()
   // attachPCINT(digitalPinToPCINT(w.getEncPinB()), triggerB, RISING);
 
   Serial.begin(38400);
-  Serial.setTimeout(intervalMillis);
+  Serial.setTimeout(wheelPeriod);
 }
 
 void updateDesired()
 {
-  unsigned long step = millis() / period;
-  if (step < valuesSize)
+  prev = step;
+  step = millis() / period;
+  if (step > prev)
   {
-    desiredVelocity = desiredValues[step];
-  }
-}
-
-void controlWheel()
-{
-  currentMillis = millis();
-    unsigned long diff = currentMillis - previousMillis;
-    if (diff > period)
+    if (step % 2 == 0)
     {
-        previousMillis = currentMillis;
-
-        double dt = (double)diff / 1000; // millis to seconds
-        w.reachLinearVelocity(desiredVelocity, dt);
-        sendData();
+      desiredLinearVelocity = 0;
     }
+    else
+    {
+      desiredLinearVelocity = 0.5;
+    }
+
+    // desiredLinearVelocity = random(-100, 100) / 100.0;
+    // desiredLinearVelocity = 1;
+  }
 }
 
 void sendData()
 {
   Serial.print('$');
-  Serial.print(desiredVelocity);
-  Serial.print(' ');
-  Serial.print(w.getPidOutput());
+  Serial.print(desiredLinearVelocity);
+  // Serial.print(' ');
+  // Serial.print(w.getPidOutput() / 255); // range from [-255; 255] to [-1; 1] for good scale on plot
   Serial.print(' ');
   Serial.print(w.getCurrentLinearVelocity());
   Serial.print(';');
+}
+
+void controlWheel()
+{
+  currentMillis = millis();
+  unsigned long diff = currentMillis - previousMillis;
+  if (diff >= wheelPeriod)
+  {
+    previousMillis = currentMillis;
+
+    double dt = (double)diff / 1000; // millis to seconds
+    w.reachLinearVelocity(desiredLinearVelocity, dt);
+    sendData();
+  }
 }
 
 void loop()
