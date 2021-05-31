@@ -18,7 +18,6 @@ private:
   Encoder *encoder;
   PID *pid;
 
-  unsigned int interval = 0;
   unsigned long currentMillis = 0;
   unsigned long previousMillis = 0;
 
@@ -27,8 +26,7 @@ public:
       unsigned int motorNum,
       unsigned int encPinA,
       unsigned int encPinB,
-      bool isClockwise,
-      unsigned int intervalMillis);
+      bool isClockwise);
   ~Wheel();
   void setValue(int value);
   void reachLinearVelocity(double desiredVelocity, double dt);

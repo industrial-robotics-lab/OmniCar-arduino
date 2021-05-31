@@ -12,10 +12,10 @@ Car::Car(
       feedbackCarPose(feedbackPose)
 {
     G = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-    w1 = new Wheel(1, 18, 19, false, wheelPeriod);
-    w2 = new Wheel(2, 20, 21, true, wheelPeriod);
-    w3 = new Wheel(3, 50, 52, true, wheelPeriod);
-    w4 = new Wheel(4, 51, 53, false, wheelPeriod);
+    w1 = new Wheel(1, 18, 19, false);
+    w2 = new Wheel(2, 20, 21, true);
+    w3 = new Wheel(3, 50, 52, true);
+    w4 = new Wheel(4, 51, 53, false);
 
     H_0 = {-l - w, 1, -1, l + w, 1, 1, l + w, 1, -1, -l - w, 1, 1};
     H_0 /= r;
@@ -49,7 +49,7 @@ void Car::findCarPose()
     *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
 }
 
-void Car::setValues(double v1, double v2, double v3, double v4)
+void Car::setValues(int v1, int v2, int v3, int v4)
 {
     w1->setValue(v1);
     w2->setValue(v2);

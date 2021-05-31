@@ -35,7 +35,7 @@ public:
         Matrix<3> *feedbackPose);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);
-    void setValues(double v1, double v2, double v3, double v4);
+    void setValues(int v1, int v2, int v3, int v4);
     void update();
 
     int getEncPin1A();

@@ -5,9 +5,7 @@ Wheel::Wheel(
     unsigned int motorNum,
     unsigned int encPinA,
     unsigned int encPinB,
-    bool isClockwise,
-    unsigned int intervalMillis)
-    : interval(intervalMillis)
+    bool isClockwise)
 {
     // 1900 - stability limit for motor 1
     // kP = 1140; kI = 3040; kD = 107; // position PID
@@ -50,7 +48,7 @@ void Wheel::reachLinearVelocity(double desiredLinearVelocity, double dt)
     pidFeedback = currentLinearVelocity;
     pidSetpoint = desiredLinearVelocity;
     pid->Compute();
-    motor->setValue(pidOutput);
+    motor->setValue((int)pidOutput);
 }
 
 void Wheel::triggerA() { encoder->triggerA(); }

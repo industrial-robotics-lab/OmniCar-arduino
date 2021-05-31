@@ -13,7 +13,7 @@ void setup() {
     // attachPCINT(digitalPinToPCINT(pinA), triggerA, RISING);
     // attachPCINT(digitalPinToPCINT(pinB), triggerB, RISING);
 
-    Serial.begin(115200);
+    Serial.begin(38400);
 }
 
 void loop() {
