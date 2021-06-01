@@ -30,7 +30,7 @@ public:
       bool isClockwise);
   ~Wheel();
   void setValue(int value);
-  void reachLinearVelocity(double desiredVelocity, double dt);
+  double reachLinearVelocity(double desiredVelocity, double dt);
   void triggerA();
   void triggerB();
   void resetEncoder();

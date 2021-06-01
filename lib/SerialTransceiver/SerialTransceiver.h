@@ -9,6 +9,7 @@ class SerialTransceiver
 private:
     float maxLinSpeed;
     float maxAngSpeed;
+    float threshold;
     uint8_t controlVec[3] = {127, 127, 127};
     Matrix<3> *desiredVelocity;
     Matrix<3> *feedbackPose;

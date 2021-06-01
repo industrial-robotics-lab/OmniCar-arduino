@@ -4,7 +4,7 @@ Car::Car(
     float w,
     float l,
     float r,
-    unsigned int wheelPeriod,
+    unsigned long wheelPeriod,
     Matrix<3> *desiredVelocity,
     Matrix<3> *feedbackPose)
     : period(wheelPeriod),
@@ -16,10 +16,15 @@ Car::Car(
     w2 = new Wheel(2, 20, 21, true);
     w3 = new Wheel(3, 50, 52, true);
     w4 = new Wheel(4, 51, 53, false);
+    vb.Fill(0);
+    vb6.Fill(0);
 
-    H_0 = {-l - w, 1, -1, l + w, 1, 1, l + w, 1, -1, -l - w, 1, 1};
+    float lw = l + w;
+    H_0 = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
     H_0 /= r;
-    F = {-1.0 / (l + w), 1.0 / (l + w), 1.0 / (l + w), -1.0 / (l + w), 1, 1, 1, 1, -1, 1, -1, 1};
+    R_fi = {1, 0, 0, 0, 1, 0, 0, 0, 0};
+    float ilw = 1.0 / lw;
+    F = {-ilw, ilw, ilw, -ilw, 1, 1, 1, 1, -1, 1, -1, 1};
     F *= r / 4;
 }
 Car::~Car()
@@ -30,23 +35,22 @@ Car::~Car()
     delete w4;
 }
 
-void Car::setDesiredVelocity(float vTheta, float vX, float vY)
+void Car::setDesiredVelocity(float vFi, float vX, float vY)
 {
-    *desiredCarVelocity = {vTheta, vX, vY};
+    *desiredCarVelocity = {vFi, vX, vY};
 }
 
 void Car::findCarPose()
 {
-    wheelsDisplacement = {
-        (double)w1->getTicks() / TICKS_PER_REV,
-        (double)w2->getTicks() / TICKS_PER_REV,
-        (double)w3->getTicks() / TICKS_PER_REV,
-        (double)w4->getTicks() / TICKS_PER_REV};
-    Matrix<3> vb = F * wheelsDisplacement;
-    Matrix<6> twist = {0, 0, vb(0), vb(1), vb(2), 0};
-    Matrix<4, 4> prevToCurrPose = vec6_to_SE3(twist);
+    vb = F * wheelsDisplacement;
+    // vb6 = {0, 0, vb(0), vb(1), vb(2), 0};
+    vb6(2) = vb(0);
+    vb6(3) = vb(1);
+    vb6(4) = vb(2);
+    prevToCurrPose = vec6_to_SE3(vb6);
     G *= prevToCurrPose;
-    *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
+    // *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
+    *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), -G(1, 3), G(0, 3)}; // reversed axes for map visualization
 }
 
 void Car::setValues(int v1, int v2, int v3, int v4)
@@ -60,8 +64,12 @@ void Car::setValues(int v1, int v2, int v3, int v4)
 void Car::reachCarVelocity(Matrix<3> carVel)
 {
     float fi = carVel(0);
-    Matrix<3, 3> R_fi = {1, 0, 0, 0, cos(fi), sin(fi), 0, -sin(fi), cos(fi)};
-    Matrix<4> wheelsVel = H_0 * R_fi * carVel;
+    R_fi(1, 1) = cos(fi);
+    R_fi(1, 2) = sin(fi);
+    R_fi(2, 1) = -sin(fi);
+    R_fi(2, 2) = cos(fi);
+    wheelsVel = H_0 * R_fi * carVel;
+    // wheelsVel = H_0 * carVel;
     reachWheelsVelocity(wheelsVel);
 }
 
@@ -69,16 +77,21 @@ void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
 {
     currentMillis = millis();
     unsigned long diff = currentMillis - previousMillis;
-    if (diff > period)
+    if (diff >= period)
     {
         previousMillis = currentMillis;
-
-        findCarPose();
         double dt = (double)diff / 1000; // millis to seconds
-        w1->reachLinearVelocity(wheelsVel(0), dt);
-        w2->reachLinearVelocity(wheelsVel(1), dt);
-        w3->reachLinearVelocity(wheelsVel(2), dt);
-        w4->reachLinearVelocity(wheelsVel(3), dt);
+        wheelsDisplacement(0) += w1->reachLinearVelocity(wheelsVel(0), dt);
+        wheelsDisplacement(1) += w2->reachLinearVelocity(wheelsVel(1), dt);
+        wheelsDisplacement(2) += w3->reachLinearVelocity(wheelsVel(2), dt);
+        wheelsDisplacement(3) += w4->reachLinearVelocity(wheelsVel(3), dt);
+        updateCounter++;
+        if (updateCounter == 3)
+        {
+            findCarPose();
+            wheelsDisplacement.Fill(0);
+            updateCounter = 0;
+        }
     }
 }
 

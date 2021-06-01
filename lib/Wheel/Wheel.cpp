@@ -44,11 +44,11 @@ void Wheel::setValue(int value)
     motor->setValue(value);
 }
 
-void Wheel::reachLinearVelocity(double desiredLinearVelocity, double dt)
+double Wheel::reachLinearVelocity(double desiredLinearVelocity, double dt)
 {
     ticks = encoder->getTicks(); // max ticks for 40 millis period = ~130-140
     resetEncoder();
-    if (abs(ticks) > 150) return;
+    if (abs(ticks) > 150) return 0;
     revolutions = (double)ticks / TICKS_PER_REV;
     linearDistance = PI * DIAMETER * revolutions;
     currentLinearVelocity = linearDistance / dt;
@@ -56,6 +56,7 @@ void Wheel::reachLinearVelocity(double desiredLinearVelocity, double dt)
     pidSetpoint = desiredLinearVelocity;
     pid->Compute();
     motor->setValue((int)pidOutput);
+    return revolutions;
 }
 
 void Wheel::triggerA() { encoder->triggerA(); }

@@ -7,9 +7,10 @@
 class Car
 {
 private:
-    unsigned int period;
+    unsigned long period;
     unsigned long currentMillis;
     unsigned long previousMillis;
+    unsigned int updateCounter;
     Matrix<3> *desiredCarVelocity;
     Matrix<3> *feedbackCarPose;
     Matrix<4, 4> G; // global transformation
@@ -17,6 +18,11 @@ private:
     Wheel *w2;
     Wheel *w3;
     Wheel *w4;
+    Matrix<3> vb;
+    Matrix<6> vb6;
+    Matrix<4, 4> prevToCurrPose;
+    Matrix<4> wheelsVel;
+    Matrix<3, 3> R_fi;
     Matrix<4, 3> H_0;
     Matrix<3, 4> F;
     Matrix<4> wheelsDisplacement;
@@ -30,7 +36,7 @@ public:
         float w,
         float l,
         float r,
-        unsigned int wheelPeriod,
+        unsigned long wheelPeriod,
         Matrix<3> *desiredVelocity,
         Matrix<3> *feedbackPose);
     ~Car();
