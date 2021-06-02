@@ -3,8 +3,8 @@
 SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
     : desiredVelocity(desired), feedbackPose(feedback)
 {
-    maxAngSpeed = 0.15;
-    maxLinSpeed = 0.02;
+    maxAngSpeed = 0.5;
+    maxLinSpeed = 0.1;
     threshold = 0.0001;
 }
 
@@ -29,9 +29,9 @@ void SerialTransceiver::rx()
         calcChecksum = crc8((uint8_t *)controlVec, 3);
         if (readChecksum == calcChecksum)
         {
-            float fi = mapUint8ToFloat(controlVec[0], -maxAngSpeed, maxAngSpeed);
-            float x = mapUint8ToFloat(controlVec[1], -maxLinSpeed, maxLinSpeed);
-            float y = mapUint8ToFloat(controlVec[2], -maxLinSpeed, maxLinSpeed);
+            fi = mapUint8ToFloat(controlVec[0], -maxAngSpeed, maxAngSpeed);
+            x = mapUint8ToFloat(controlVec[1], -maxLinSpeed, maxLinSpeed);
+            y = mapUint8ToFloat(controlVec[2], -maxLinSpeed, maxLinSpeed);
             if (abs(fi) <= threshold) fi = 0;
             if (abs(x) <= threshold) x = 0;
             if (abs(y) <= threshold) y = 0;

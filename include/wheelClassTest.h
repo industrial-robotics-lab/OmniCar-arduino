@@ -68,7 +68,7 @@ void controlWheel()
     previousMillis = currentMillis;
 
     double dt = (double)diff / 1000; // millis to seconds
-    w.reachLinearVelocity(desiredLinearVelocity, dt);
+    w.reachAngularVelocity(desiredLinearVelocity, dt);
     sendData();
   }
 }

@@ -22,7 +22,8 @@ Car::Car(
     float lw = l + w;
     H_0 = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
     H_0 /= r;
-    R_fi = {1, 0, 0, 0, 1, 0, 0, 0, 0};
+    fi = 0;
+    R_fi = {1, 0, 0, 0, cos(fi), sin(fi), 0, -sin(fi), cos(fi)};
     float ilw = 1.0 / lw;
     F = {-ilw, ilw, ilw, -ilw, 1, 1, 1, 1, -1, 1, -1, 1};
     F *= r / 4;
@@ -63,34 +64,34 @@ void Car::setValues(int v1, int v2, int v3, int v4)
 
 void Car::reachCarVelocity(Matrix<3> carVel)
 {
-    float fi = carVel(0);
+    fi = carVel(0);
     R_fi(1, 1) = cos(fi);
     R_fi(1, 2) = sin(fi);
     R_fi(2, 1) = -sin(fi);
     R_fi(2, 2) = cos(fi);
     wheelsVel = H_0 * R_fi * carVel;
     // wheelsVel = H_0 * carVel;
-    reachWheelsVelocity(wheelsVel);
+    reachWheelsAngularVelocity(wheelsVel);
 }
 
-void Car::reachWheelsVelocity(Matrix<4> wheelsVel)
+void Car::reachWheelsAngularVelocity(Matrix<4> wheelsVel)
 {
     currentMillis = millis();
-    unsigned long diff = currentMillis - previousMillis;
+    diff = currentMillis - previousMillis;
     if (diff >= period)
     {
         previousMillis = currentMillis;
-        double dt = (double)diff / 1000; // millis to seconds
-        wheelsDisplacement(0) += w1->reachLinearVelocity(wheelsVel(0), dt);
-        wheelsDisplacement(1) += w2->reachLinearVelocity(wheelsVel(1), dt);
-        wheelsDisplacement(2) += w3->reachLinearVelocity(wheelsVel(2), dt);
-        wheelsDisplacement(3) += w4->reachLinearVelocity(wheelsVel(3), dt);
-        updateCounter++;
-        if (updateCounter == 3)
+        dt = (double)diff / 1000; // millis to seconds
+        wheelsDisplacement(0) += w1->reachAngularVelocity(wheelsVel(0), dt);
+        wheelsDisplacement(1) += w2->reachAngularVelocity(wheelsVel(1), dt);
+        wheelsDisplacement(2) += w3->reachAngularVelocity(wheelsVel(2), dt);
+        wheelsDisplacement(3) += w4->reachAngularVelocity(wheelsVel(3), dt);
+        odomCounter++;
+        if (odomCounter == 2)
         {
             findCarPose();
             wheelsDisplacement.Fill(0);
-            updateCounter = 0;
+            odomCounter = 0;
         }
     }
 }

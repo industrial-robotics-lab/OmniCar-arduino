@@ -3,6 +3,7 @@
 
 #define TRACK 175.0 / 1000     // mm to m
 #define WHEELBASE 165.0 / 1000 // mm to m
+#define DIAMETER 60.0 / 1000   // mm to m
 
 class Car
 {
@@ -10,7 +11,10 @@ private:
     unsigned long period;
     unsigned long currentMillis;
     unsigned long previousMillis;
-    unsigned int updateCounter;
+    unsigned long diff;
+    unsigned int odomCounter;
+    float fi;
+    double dt;
     Matrix<3> *desiredCarVelocity;
     Matrix<3> *feedbackCarPose;
     Matrix<4, 4> G; // global transformation
@@ -29,7 +33,7 @@ private:
 
     void findCarPose(); // forward kinematics
     void reachCarVelocity(Matrix<3> carVel); // inverse kinematics
-    void reachWheelsVelocity(Matrix<4> wheelsVel);
+    void reachWheelsAngularVelocity(Matrix<4> wheelsVel);
 
 public:
     Car(
