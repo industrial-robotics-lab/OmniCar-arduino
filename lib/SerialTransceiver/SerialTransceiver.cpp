@@ -29,12 +29,35 @@ void SerialTransceiver::rx()
         calcChecksum = crc8((uint8_t *)controlVec, 3);
         if (readChecksum == calcChecksum)
         {
-            fi = mapUint8ToFloat(controlVec[0], -maxAngSpeed, maxAngSpeed);
-            x = mapUint8ToFloat(controlVec[1], -maxLinSpeed, maxLinSpeed);
-            y = mapUint8ToFloat(controlVec[2], -maxLinSpeed, maxLinSpeed);
-            if (abs(fi) <= threshold) fi = 0;
-            if (abs(x) <= threshold) x = 0;
-            if (abs(y) <= threshold) y = 0;
+            if (controlVec[0] == 127)
+            {
+                fi = 0;
+            }
+            else
+            {
+                fi = mapUint8ToFloat(controlVec[0], -maxAngSpeed, maxAngSpeed);
+            }
+
+            if (controlVec[1] == 127)
+            {
+                x = 0;
+            }
+            else
+            {
+                x = mapUint8ToFloat(controlVec[1], -maxLinSpeed, maxLinSpeed);
+            }
+
+            if (controlVec[2] == 127)
+            {
+                y = 0;
+            }
+            else
+            {
+                y = mapUint8ToFloat(controlVec[2], -maxLinSpeed, maxLinSpeed);
+            }
+            // if (abs(fi) <= threshold) fi = 0;
+            // if (abs(x) <= threshold) x = 0;
+            // if (abs(y) <= threshold) y = 0;
             (*desiredVelocity)(0) = fi;
             (*desiredVelocity)(1) = x;
             (*desiredVelocity)(2) = y;

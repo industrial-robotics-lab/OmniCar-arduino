@@ -46,17 +46,14 @@ void Wheel::setValue(int value)
 
 double Wheel::reachAngularVelocity(double desiredAngularVelocity, double dt)
 {
-    ticks = encoder->getTicks(); // max ticks for 40 millis period = ~130-140
+    ticks = constrain(encoder->getTicks(), -150, 150); // max ticks for 40 millis period = ~130-140
     resetEncoder();
     revolutions = (double)ticks / TICKS_PER_REV;
-    if (abs(ticks) > 150) // check if encoder pins give correct data
-    {
-        currentAngularVelocity = revolutions / dt;
-        pidFeedback = currentAngularVelocity;
-        pidSetpoint = desiredAngularVelocity;
-        pid->Compute();
-        motor->setValue((int)pidOutput);
-    }
+    currentAngularVelocity = revolutions / dt;
+    pidFeedback = currentAngularVelocity;
+    pidSetpoint = desiredAngularVelocity;
+    pid->Compute();
+    motor->setValue((int)pidOutput);
     return revolutions;
 }
 
@@ -66,6 +63,5 @@ void Wheel::resetEncoder() { encoder->reset(); }
 
 double Wheel::getPidOutput() { return pidOutput; }
 double Wheel::getCurrentLinearVelocity() { return currentAngularVelocity; }
-long Wheel::getTicks() { return encoder->getTicks(); }
 int Wheel::getEncPinA() { return encoder->getPinA(); }
 int Wheel::getEncPinB() { return encoder->getPinB(); }

@@ -35,7 +35,6 @@ public:
 
   double getPidOutput();
   double getCurrentLinearVelocity();
-  long getTicks();
   int getEncPinA();
   int getEncPinB();
 };
