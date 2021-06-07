@@ -24,7 +24,11 @@ private:
     Wheel *w4;
     Matrix<3> vb;
     Matrix<6> vb6;
-    Matrix<4, 4> prevToCurrPose;
+    Matrix<4, 4> T;
+    // Matrix<3> q;
+    // Matrix<3> dqb;
+    // Matrix<3> dq;
+    // float fi_k;
     Matrix<4> wheelsVel;
     Matrix<3, 3> R_fi;
     Matrix<4, 3> H_0;

@@ -18,6 +18,10 @@ Car::Car(
     w4 = new Wheel(4, 51, 53, false);
     vb.Fill(0);
     vb6.Fill(0);
+    // q.Fill(0);
+    // dqb.Fill(0);
+    // dq.Fill(0);
+    // fi_k = 0;
 
     float lw = l + w;
     H_0 = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
@@ -43,15 +47,36 @@ void Car::setDesiredVelocity(float vFi, float vX, float vY)
 
 void Car::findCarPose()
 {
-    vb = F * wheelsDisplacement;
+    vb = F * wheelsDisplacement * 5;
+
+    // - Two position estimation methods
+    // -- First method
     // vb6 = {0, 0, vb(0), vb(1), vb(2), 0};
     vb6(2) = vb(0);
     vb6(3) = vb(1);
     vb6(4) = vb(2);
-    prevToCurrPose = vec6_to_SE3(vb6);
-    G *= prevToCurrPose;
+    T = vec6_to_SE3(vb6);
+    G *= T;
     // *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
-    *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), -G(1, 3), G(0, 3)}; // reversed axes for map visualization
+    *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), -G(1, 3), G(0, 3)}; // reversed axes for convenient map visualization
+
+    // -- Second method
+    // if(vb(0) == 0) {
+    //     dqb(0) = 0;
+    //     dqb(1) = vb(1);
+    //     dqb(2) = vb(2);
+    // }
+    // else
+    // {
+    //     dqb(0) = vb(0);
+    //     dqb(1) = (vb(1)*sin(vb(0)) + vb(2)*(cos(vb(0))-1)) / vb(0);
+    //     dqb(2) = (vb(2)*sin(vb(0)) + vb(1)*(1-cos(vb(0)))) / vb(0);
+    //     fi_k += dqb(0);
+    // }
+    // Matrix<3, 3> R = {1, 0, 0, 0, cos(fi_k), -sin(fi_k), 0, sin(fi_k), cos(fi_k)};
+    // dq = R * dqb;
+    // q += dq;
+    // *feedbackCarPose = {q(0), -q(2), q(1)}; // reversed axes for map visualization
 }
 
 void Car::setValues(int v1, int v2, int v3, int v4)
@@ -87,7 +112,7 @@ void Car::reachWheelsAngularVelocity(Matrix<4> wheelsVel)
         wheelsDisplacement(2) += w3->reachAngularVelocity(wheelsVel(2), dt);
         wheelsDisplacement(3) += w4->reachAngularVelocity(wheelsVel(3), dt);
         odomCounter++;
-        if (odomCounter == 2)
+        if (odomCounter == 5)
         {
             findCarPose();
             wheelsDisplacement.Fill(0);
