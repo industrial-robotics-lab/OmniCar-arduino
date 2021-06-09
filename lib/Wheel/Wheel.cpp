@@ -46,7 +46,11 @@ void Wheel::setValue(int value)
 
 double Wheel::reachAngularVelocity(double desiredAngularVelocity, double dt)
 {
-    ticks = constrain(encoder->getTicks(), -150, 150); // max ticks for 40 millis period = ~130-140
+    long rawTicks = encoder->getTicks();
+    if (abs(rawTicks) < 150) // max ticks for 40 millis period = ~130-140
+    {
+        ticks = rawTicks;
+    }
     resetEncoder();
     revolutions = (double)ticks / TICKS_PER_REV;
     currentAngularVelocity = revolutions / dt;

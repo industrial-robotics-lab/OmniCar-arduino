@@ -47,7 +47,7 @@ void Car::setDesiredVelocity(float vFi, float vX, float vY)
 
 void Car::findCarPose()
 {
-    vb = F * wheelsDisplacement * 5;
+    vb = F * wheelsDisplacement * TWO_PI;
 
     // - Two position estimation methods
     // -- First method
@@ -112,7 +112,7 @@ void Car::reachWheelsAngularVelocity(Matrix<4> wheelsVel)
         wheelsDisplacement(2) += w3->reachAngularVelocity(wheelsVel(2), dt);
         wheelsDisplacement(3) += w4->reachAngularVelocity(wheelsVel(3), dt);
         odomCounter++;
-        if (odomCounter == 5)
+        if (odomCounter == 1)
         {
             findCarPose();
             wheelsDisplacement.Fill(0);
