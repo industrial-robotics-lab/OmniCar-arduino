@@ -1,6 +1,8 @@
 #include "Wheel.h"
 #include "omnimath.h"
 
+// max linear car vel = ~0.85 m/s
+// max angular car vel = ~5 rad/s
 #define TRACK 175.0 / 1000     // mm to m
 #define WHEELBASE 165.0 / 1000 // mm to m
 #define DIAMETER 60.0 / 1000   // mm to m

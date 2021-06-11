@@ -3,8 +3,8 @@
 SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
     : desiredVelocity(desired), feedbackPose(feedback)
 {
-    maxAngSpeed = 0.5;
-    maxLinSpeed = 0.1;
+    maxAngSpeed = 5;
+    maxLinSpeed = 0.85;
     threshold = 0.0001;
 }
 

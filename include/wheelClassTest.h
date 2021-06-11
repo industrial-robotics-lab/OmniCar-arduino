@@ -2,10 +2,10 @@
 #include "Wheel.h"
 
 unsigned long wheelPeriod = 40;
-Wheel w(1, 18, 19, false); // max speed == ~0.9 m/s
-// Wheel w(2, 20, 21, true); // max speed == ~0. m/s
-// Wheel w(3, 50, 52, true); // max speed == ~0.85 m/s
-// Wheel w(4, 51, 53, false); // max speed == ~0.9 m/s
+Wheel w(1, 18, 19, false); // max rot speed == ~4.72 rev/s
+// Wheel w(2, 20, 21, true); // max rot speed == ~4.51 rev/s
+// Wheel w(3, 50, 52, true); // max rot speed == ~4.44 rev/s
+// Wheel w(4, 51, 53, false); // max rot speed == ~4.93 rev/s
 void triggerA() { w.triggerA(); }
 void triggerB() { w.triggerB(); }
 

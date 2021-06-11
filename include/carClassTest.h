@@ -32,8 +32,8 @@ void setup()
 
 void loop()
 {
-    //                     t  x     y
-    car.setDesiredVelocity(0, 0.1, 0);
+    //                     t  x  y
+    car.setDesiredVelocity(0, 1, 0); // 5, 1, 1
     auto t1 = millis();
     car.update();
     auto t2 = millis();
