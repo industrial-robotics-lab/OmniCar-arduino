@@ -89,13 +89,17 @@ void Car::setValues(int v1, int v2, int v3, int v4)
 
 void Car::reachCarVelocity(Matrix<3> carVel)
 {
-    fi = carVel(0);
-    R_fi(1, 1) = cos(fi);
-    R_fi(1, 2) = sin(fi);
-    R_fi(2, 1) = -sin(fi);
-    R_fi(2, 2) = cos(fi);
-    wheelsVel = H_0 * R_fi * carVel;
-    // wheelsVel = H_0 * carVel;
+    // === Method 1: global velocity ===
+    // fi = (*feedbackCarPose)(0);
+    // R_fi(1, 1) = cos(fi);
+    // R_fi(1, 2) = sin(fi);
+    // R_fi(2, 1) = -sin(fi);
+    // R_fi(2, 2) = cos(fi);
+    // wheelsVel = H_0 * R_fi * carVel;
+
+    // === Method 2: local velocity ===
+    wheelsVel = H_0 * carVel;
+    
     reachWheelsAngularVelocity(wheelsVel);
 }
 
