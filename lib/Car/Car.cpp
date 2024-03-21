@@ -12,10 +12,10 @@ Car::Car(
       feedbackCarPose(feedbackPose)
 {
     G = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-    w1 = new Wheel(1, 18, 19, false);
+    w1 = new Wheel(1, 51, 53, false);
     w2 = new Wheel(2, 20, 21, true);
     w3 = new Wheel(3, 50, 52, true);
-    w4 = new Wheel(4, 51, 53, false);
+    w4 = new Wheel(4, 18, 19, false);
     vb.Fill(0);
     vb6.Fill(0);
     // q.Fill(0);
