@@ -1,36 +1,38 @@
-#include "Arduino.h"
 #include "Wheel.h"
 
 Wheel::Wheel(
     unsigned int motorNum,
     unsigned int encPinA,
     unsigned int encPinB,
-    bool isClockwise)
-{
+    bool isClockwise,
+    double kP,
+    double kI,
+    double kD,
+    double dt
+) {
     // 1900 - stability limit for motor 1
     // kP = 1140; kI = 3040; kD = 107; // position PID
 
     // kP = 50; kI = 800; kD = 5; // angular velocity PID (crazy on heap to zero)
 
-    kP = 50;
-    kI = 500;
-    kD = 0; // angular velocity PID
 
     // kP = 300;
     // kI = 800;
-    // kD = 5; // linear velocity PID
+    // kD = 5; // Angular velocity PID
 
-    this->motor = new Motor(motorNum);
+    this->motor = new Motor(motorNum, 60);
     this->encoder = new Encoder(encPinA, encPinB, isClockwise);
-    this->pid = new PID(&pidFeedback, &pidOutput, &pidSetpoint, kP, kI, kD, DIRECT);
-    pid->SetMode(AUTOMATIC);
-    pid->SetOutputLimits(-255, 255);
-    // pid->SetSampleTime(intervalMillis); // in millis
-    // pid->SetTunings(1, 2, 3);
-    // pid->SetControllerDirection(DIRECT);
+    this->pid = new PID(kP, kI, kD, dt);
+    pid->setOutputLimits(-1.0, 1.0);
+    pid->setMaxIntegralValue(0.2);
 
     currentMillis = 0;
     previousMillis = 0;
+    currentAngularVelocity = 0.0;
+    lastAngularVelocity = 0.0;
+    currentAngle = encoder->getAngle();
+    lastAngle = currentAngle;
+    lastlastAngle = currentAngle;
 }
 Wheel::~Wheel()
 {
@@ -39,33 +41,32 @@ Wheel::~Wheel()
     delete pid;
 }
 
-void Wheel::setValue(int value)
+void Wheel::setMotorControl(float pwm)
 {
-    motor->setValue(value);
+    motor->setMotorControl(pwm);
 }
 
-double Wheel::reachAngularVelocity(double desiredAngularVelocity, double dt)
+float Wheel::reachAngularVelocity(float desiredAngularVelocity, float dt)
 {
-    long rawTicks = encoder->getTicks();
-    if (abs(rawTicks) < 150) // max ticks for 40 millis period = ~130-140
-    {
-        ticks = rawTicks;
-    }
-    resetEncoder();
-    revolutions = (double)ticks / TICKS_PER_REV;
-    currentAngularVelocity = revolutions / dt;
-    pidFeedback = currentAngularVelocity;
-    pidSetpoint = desiredAngularVelocity;
-    pid->Compute();
-    motor->setValue((int)pidOutput);
-    return revolutions;
+    float currentAngle = encoder->getAngle();
+    lastlastAngle = lastAngle;
+    lastAngle = currentAngle;
+    // Using Lagrange 3-order polinomial  interpolation
+    currentAngularVelocity = 1.0/(2.0*dt)*(lastlastAngle - 4.0*lastAngle + 3.0*currentAngle);;
+    pid->update(desiredAngularVelocity, currentAngularVelocity);
+    pidOutput = pid->output;
+    motor->setMotorControl(pidOutput);
+    
+    lastAngularVelocity = currentAngularVelocity;
+    return currentAngularVelocity;
 }
 
 void Wheel::triggerA() { encoder->triggerA(); }
 void Wheel::triggerB() { encoder->triggerB(); }
 void Wheel::resetEncoder() { encoder->reset(); }
 
-double Wheel::getPidOutput() { return pidOutput; }
-double Wheel::getCurrentLinearVelocity() { return currentAngularVelocity; }
+float Wheel::getPidOutput() { return pidOutput; }
+float Wheel::getSendedPWM() { return motor->getSendedPWM(); }
+float Wheel::getCurrentAngularVelocity() { return currentAngularVelocity; }
 int Wheel::getEncPinA() { return encoder->getPinA(); }
 int Wheel::getEncPinB() { return encoder->getPinB(); }

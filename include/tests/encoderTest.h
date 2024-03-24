@@ -1,8 +1,9 @@
 #include <PinChangeInterrupt.h>
+#include "config.h"
 // #include "Arduino.h"
 
-const int pinA = 18;
-const int pinB = 19;
+const int pinA = ENC_MOTOR3_PINA;
+const int pinB = ENC_MOTOR3_PINB;
 
 volatile long position = 0;
 
@@ -33,12 +34,15 @@ void triggerB() {
 void setup() {
     pinMode(pinA, INPUT_PULLUP);
     pinMode(pinB, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(pinA), triggerA, RISING);
-    attachInterrupt(digitalPinToInterrupt(pinB), triggerB, RISING);
-    // attachPCINT(digitalPinToPCINT(pinA), triggerA, RISING);
-    // attachPCINT(digitalPinToPCINT(pinB), triggerB, RISING);
 
-    Serial.begin(115200);
+    // attachInterrupt(digitalPinToInterrupt(pinA), triggerA, RISING);
+    // attachInterrupt(digitalPinToInterrupt(pinB), triggerB, RISING);
+
+    // Use program interrupt
+    attachPCINT(digitalPinToPCINT(pinA), triggerA, RISING);
+    attachPCINT(digitalPinToPCINT(pinB), triggerB, RISING);
+
+    Serial.begin(38400);
 }
 
 void loop() {}

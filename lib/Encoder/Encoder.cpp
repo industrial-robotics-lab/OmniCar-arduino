@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #include "Encoder.h"
 
 Encoder::Encoder(
@@ -9,14 +8,7 @@ Encoder::Encoder(
 {
   pinMode(pinA, INPUT_PULLUP);
   pinMode(pinB, INPUT_PULLUP);
-  if (isClockwise)
-  {
-    increment = 1;
-  }
-  else
-  {
-    increment = -1;
-  }
+  increment = (2*isClockwise-1);
 }
 
 void Encoder::triggerA()
@@ -41,11 +33,17 @@ void Encoder::triggerB()
   {
     ticks -= increment;
   }
+
 }
 
 volatile long Encoder::getTicks()
 {
   return ticks;
+}
+
+double Encoder::getAngle()
+{
+  return (double)ticks/ ENC_TICKS_PER_REV *TWO_PI;
 }
 
 void Encoder::reset()

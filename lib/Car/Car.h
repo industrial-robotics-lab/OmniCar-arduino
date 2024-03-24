@@ -1,11 +1,9 @@
+#pragma once
+
 #include "Wheel.h"
 #include "omnimath.h"
 
-// max linear car vel = ~0.85 m/s
-// max angular car vel = ~5 rad/s
-#define TRACK 175.0 / 1000     // mm to m
-#define WHEELBASE 165.0 / 1000 // mm to m
-#define DIAMETER 60.0 / 1000   // mm to m
+#define WHEELS_COUNT 4
 
 class Car
 {
@@ -17,58 +15,38 @@ private:
     unsigned int odomCounter;
     float fi;
     double dt;
-    Matrix<3> *desiredCarVelocity;
-    Matrix<3> *feedbackCarPose;
+    Matrix<3, 1, float> *desiredCarVelocity;
+    Matrix<3, 1, float> *feedbackCarPose;
     Matrix<4, 4> G; // global transformation
-    Wheel *w1;
-    Wheel *w2;
-    Wheel *w3;
-    Wheel *w4;
-    Matrix<3> vb;
-    Matrix<6> vb6;
-    Matrix<4, 4> T;
+    Matrix<3, 1, float> vb;
+    Matrix<6, 1, float> vb6;
+    Matrix<4, 4, float> T;
     // Matrix<3> q;
     // Matrix<3> dqb;
     // Matrix<3> dq;
     // float fi_k;
-    Matrix<4> wheelsVel;
-    Matrix<3, 3> R_fi;
-    Matrix<4, 3> H_0;
-    Matrix<3, 4> F;
-    Matrix<4> wheelsDisplacement;
+    Matrix<WHEELS_COUNT, 1, float> wheelsVel;
+    Matrix<3, 3, float> R_fi;
+    Matrix<4, 3, float> H_0;
+    Matrix<3, 4, float> F;
+    Matrix<WHEELS_COUNT, 1, float> wheelsDisplacement;
 
     void findCarPose(); // forward kinematics
-    void reachCarVelocity(Matrix<3> carVel); // inverse kinematics
-    void reachWheelsAngularVelocity(Matrix<4> wheelsVel);
+    void reachCarVelocity(Matrix<3, 1, float> &carVel); // inverse kinematics
+    void reachWheelsAngularVelocity(Matrix<WHEELS_COUNT, 1, float> &wheelsVel);
 
 public:
+    Wheel * wheels[WHEELS_COUNT];
+
     Car(
         float w,
         float l,
         float r,
         unsigned long wheelPeriod,
-        Matrix<3> *desiredVelocity,
-        Matrix<3> *feedbackPose);
+        Matrix<3, 1, float> *desiredVelocity,
+        Matrix<3, 1, float> *feedbackPose);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);
-    void setValues(int v1, int v2, int v3, int v4);
+    void setMotorsPWM(Matrix<WHEELS_COUNT, 1, int> &motorsPwm);
     void update();
-
-    int getEncPin1A();
-    int getEncPin1B();
-    int getEncPin2A();
-    int getEncPin2B();
-    int getEncPin3A();
-    int getEncPin3B();
-    int getEncPin4A();
-    int getEncPin4B();
-
-    void incEnc1A();
-    void incEnc1B();
-    void incEnc2A();
-    void incEnc2B();
-    void incEnc3A();
-    void incEnc3B();
-    void incEnc4A();
-    void incEnc4B();
 };

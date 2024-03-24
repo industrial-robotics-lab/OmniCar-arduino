@@ -1,15 +1,19 @@
+#pragma once
+
 #include "Motor.h"
 #include "Encoder.h"
-#include <PID_v1.h>
-
-#define TICKS_PER_REV 720
+#include <Pid.h>
 
 class Wheel
 {
 private:
   double pidSetpoint, pidFeedback, pidOutput;
-  double kP, kI, kD;
-  double currentAngularVelocity;
+  float currentAngularVelocity;
+  float lastAngularVelocity;
+
+  double currentAngle; // make private
+  double lastAngle; // make private
+  double lastlastAngle;
 
   Motor *motor;
   Encoder *encoder;
@@ -20,21 +24,29 @@ private:
 
 public:
   long ticks; // make private
-  double revolutions; // make private
+
   Wheel(
-      unsigned int motorNum,
-      unsigned int encPinA,
-      unsigned int encPinB,
-      bool isClockwise);
+    unsigned int motorNum,
+    unsigned int encPinA,
+    unsigned int encPinB,
+    bool isClockwise,
+    double kP = 1.0,
+    double kI = 0.0,
+    double kD = 0.0,
+    double dt = 0.05
+  );
   ~Wheel();
-  void setValue(int value);
-  double reachAngularVelocity(double desiredVelocity, double dt);
+  void setMotorControl(float pwm);
+  float reachAngularVelocity(float desiredVelocity, float dt);
   void triggerA();
   void triggerB();
   void resetEncoder();
 
-  double getPidOutput();
-  double getCurrentLinearVelocity();
+  float getPidOutput();
+  float getSendedPWM();
+
+  float getCurrentAngularVelocity();
+
   int getEncPinA();
   int getEncPinB();
 };

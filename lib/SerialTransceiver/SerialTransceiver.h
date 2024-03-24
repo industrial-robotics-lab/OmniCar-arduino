@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Arduino.h>
 #include <BasicLinearAlgebra.h>
 #include "omnimath.h"

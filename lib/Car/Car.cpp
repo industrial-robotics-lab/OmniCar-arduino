@@ -1,21 +1,24 @@
 #include "Car.h"
+#include "config.h"
+
+#define TWO_PI_F 6.283185f
 
 Car::Car(
     float w,
     float l,
     float r,
     unsigned long wheelPeriod,
-    Matrix<3> *desiredVelocity,
-    Matrix<3> *feedbackPose)
+    Matrix<3,1, float> *desiredVelocity,
+    Matrix<3,1, float> *feedbackPose)
     : period(wheelPeriod),
       desiredCarVelocity(desiredVelocity),
       feedbackCarPose(feedbackPose)
 {
     G = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-    w1 = new Wheel(1, 51, 53, false);
-    w2 = new Wheel(2, 20, 21, true);
-    w3 = new Wheel(3, 50, 52, true);
-    w4 = new Wheel(4, 18, 19, false);
+    *(wheels + 0) = new Wheel(1, ENC_MOTOR1_PINA, ENC_MOTOR1_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
+    *(wheels + 1) = new Wheel(2, ENC_MOTOR2_PINA, ENC_MOTOR2_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
+    *(wheels + 2) = new Wheel(3, ENC_MOTOR3_PINA, ENC_MOTOR3_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
+    *(wheels + 3) = new Wheel(4, ENC_MOTOR4_PINA, ENC_MOTOR4_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
     vb.Fill(0);
     vb6.Fill(0);
     // q.Fill(0);
@@ -34,10 +37,7 @@ Car::Car(
 }
 Car::~Car()
 {
-    delete w1;
-    delete w2;
-    delete w3;
-    delete w4;
+    delete wheels;
 }
 
 void Car::setDesiredVelocity(float vFi, float vX, float vY)
@@ -47,7 +47,7 @@ void Car::setDesiredVelocity(float vFi, float vX, float vY)
 
 void Car::findCarPose()
 {
-    vb = F * wheelsDisplacement * TWO_PI;
+    vb = F * wheelsDisplacement * TWO_PI_F;
 
     // - Two position estimation methods
     // -- First method
@@ -79,15 +79,14 @@ void Car::findCarPose()
     // *feedbackCarPose = {q(0), -q(2), q(1)}; // reversed axes for map visualization
 }
 
-void Car::setValues(int v1, int v2, int v3, int v4)
+void Car::setMotorsPWM(Matrix<WHEELS_COUNT, 1, int> &motorsPWM)
 {
-    w1->setValue(v1);
-    w2->setValue(v2);
-    w3->setValue(v3);
-    w4->setValue(v4);
+    for (uint8_t i=0; i<WHEELS_COUNT; i++){
+        wheels[i]->setMotorControl(motorsPWM(i));
+    }
 }
 
-void Car::reachCarVelocity(Matrix<3> carVel)
+void Car::reachCarVelocity(Matrix<3,1, float> &carVel)
 {
     // === Method 1: global velocity ===
     // fi = (*feedbackCarPose)(0);
@@ -103,18 +102,17 @@ void Car::reachCarVelocity(Matrix<3> carVel)
     reachWheelsAngularVelocity(wheelsVel);
 }
 
-void Car::reachWheelsAngularVelocity(Matrix<4> wheelsVel)
+void Car::reachWheelsAngularVelocity(Matrix<WHEELS_COUNT, 1, float> & wheelsVel)
 {
     currentMillis = millis();
     diff = currentMillis - previousMillis;
     if (diff >= period)
     {
         previousMillis = currentMillis;
-        dt = (double)diff / 1000; // millis to seconds
-        wheelsDisplacement(0) += w1->reachAngularVelocity(wheelsVel(0), dt);
-        wheelsDisplacement(1) += w2->reachAngularVelocity(wheelsVel(1), dt);
-        wheelsDisplacement(2) += w3->reachAngularVelocity(wheelsVel(2), dt);
-        wheelsDisplacement(3) += w4->reachAngularVelocity(wheelsVel(3), dt);
+        dt = (double)diff / 1000.0; // millis to seconds
+        for(uint8_t wi = 0; wi < WHEELS_COUNT; wi++){
+            wheelsDisplacement(wi) = wheels[wi]->reachAngularVelocity(wheelsVel(wi), dt);
+        }
         odomCounter++;
         if (odomCounter == 1)
         {
@@ -129,21 +127,3 @@ void Car::update()
 {
     reachCarVelocity(*desiredCarVelocity);
 }
-
-int Car::getEncPin1A() { return w1->getEncPinA(); }
-int Car::getEncPin1B() { return w1->getEncPinB(); }
-int Car::getEncPin2A() { return w2->getEncPinA(); }
-int Car::getEncPin2B() { return w2->getEncPinB(); }
-int Car::getEncPin3A() { return w3->getEncPinA(); }
-int Car::getEncPin3B() { return w3->getEncPinB(); }
-int Car::getEncPin4A() { return w4->getEncPinA(); }
-int Car::getEncPin4B() { return w4->getEncPinB(); }
-
-void Car::incEnc1A() { w1->triggerA(); }
-void Car::incEnc1B() { w1->triggerB(); }
-void Car::incEnc2A() { w2->triggerA(); }
-void Car::incEnc2B() { w2->triggerB(); }
-void Car::incEnc3A() { w3->triggerA(); }
-void Car::incEnc3B() { w3->triggerB(); }
-void Car::incEnc4A() { w4->triggerA(); }
-void Car::incEnc4B() { w4->triggerB(); }
