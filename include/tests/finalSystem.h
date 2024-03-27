@@ -5,9 +5,10 @@
 #include "config.h"
 
 Matrix<3> desiredCarVelocity;
-Matrix<3> feedbackCarPose;
+Matrix<4> jointAngles;
+Matrix<4> jointVelocities;
 
-Car car(WHEELBASE_LENGTH / 2, WHEELBASE_WIDTH / 2, OMNIWHEEL_DIAMETER / 2, UPDATE_STATE_DT_MS, &desiredCarVelocity, &feedbackCarPose);
+Car car(WHEELBASE_LENGTH / 2, WHEELBASE_WIDTH / 2, OMNIWHEEL_DIAMETER / 2, UPDATE_STATE_DT_MS, &desiredCarVelocity, &jointAngles, &jointVelocities);
 void updateW1A() { car.wheels[0]->triggerA(); }
 void updateW1B() { car.wheels[0]->triggerB(); }
 void updateW2A() { car.wheels[1]->triggerA(); }
@@ -17,7 +18,7 @@ void updateW3B() { car.wheels[2]->triggerB(); }
 void updateW4A() { car.wheels[3]->triggerA(); }
 void updateW4B() { car.wheels[3]->triggerB(); }
 
-SerialTransceiver transceiver(&desiredCarVelocity, &feedbackCarPose);
+SerialTransceiver transceiver(&desiredCarVelocity, &jointAngles, &jointVelocities);
 
 Thread carThread = Thread();
 Thread serialThread = Thread();
@@ -37,7 +38,7 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(car.wheels[3]->getEncPinB()), updateW4B, RISING);
 
     desiredCarVelocity.Fill(0);
-    feedbackCarPose.Fill(0);
+    jointAngles.Fill(0);
 
     Serial.begin(38400);
     Serial.setTimeout(100);

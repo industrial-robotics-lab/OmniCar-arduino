@@ -13,16 +13,24 @@ private:
     float maxAngSpeed;
     float threshold;
     float fi, x, y;
-    uint8_t controlVec[3] = {127, 127, 127};
+
     Matrix<3> *desiredVelocity;
-    Matrix<3> *feedbackPose;
-    byte buffer[14];
+    Matrix<4> *jointAngles;
+    Matrix<4> *jointVelocities;
+
+    float *stateVector;
+    uint8_t bufferOutSize;
+
+    float *controlVector;
+    byte *bufferIn;
+    uint8_t bufferInSize;
+    
     byte readChecksum;
     byte calcChecksum;
     void rx();
     void tx();
 
 public:
-    SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback);
+    SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities);
     void talk();
 };

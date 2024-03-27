@@ -61,6 +61,7 @@ float Wheel::reachAngularVelocity(float desiredAngularVelocity, float dt)
     return currentAngularVelocity;
 }
 
+
 void Wheel::triggerA() { encoder->triggerA(); }
 void Wheel::triggerB() { encoder->triggerB(); }
 void Wheel::resetEncoder() { encoder->reset(); }
@@ -68,5 +69,6 @@ void Wheel::resetEncoder() { encoder->reset(); }
 float Wheel::getPidOutput() { return pidOutput; }
 float Wheel::getSendedPWM() { return motor->getSendedPWM(); }
 float Wheel::getCurrentAngularVelocity() { return currentAngularVelocity; }
+float Wheel::getCurrentAngle() { return encoder->getAngle(); }
 int Wheel::getEncPinA() { return encoder->getPinA(); }
 int Wheel::getEncPinB() { return encoder->getPinB(); }

@@ -3,10 +3,11 @@
 #include "config.h"
 
 Matrix<3> desiredCarVelocity;
-Matrix<3> feedbackCarPose;
+Matrix<4> jointAngles;
+Matrix<4> jointVelocities;
 
 unsigned long wheelPeriod = UPDATE_STATE_DT_MS; // millis
-Car car(WHEELBASE_LENGTH / 2, WHEELBASE_WIDTH / 2, OMNIWHEEL_DIAMETER / 2, UPDATE_STATE_DT_MS, &desiredCarVelocity, &feedbackCarPose);
+Car car(WHEELBASE_LENGTH / 2, WHEELBASE_WIDTH / 2, OMNIWHEEL_DIAMETER / 2, UPDATE_STATE_DT_MS, &desiredCarVelocity, &jointAngles, &jointVelocities);
 void updateW1A() { car.wheels[0]->triggerA(); }
 void updateW1B() { car.wheels[0]->triggerB(); }
 void updateW2A() { car.wheels[1]->triggerA(); }
@@ -34,11 +35,17 @@ void setup()
 void loop()
 {
     //                     t  x  y
-    car.setDesiredVelocity(0, 0.1, 0); // 5, 1, 1
+    car.setDesiredVelocity(0, 0.05, 0); // 5, 1, 1
     auto t1 = millis();
     car.update();
     auto t2 = millis();
     Serial.print("Time for car update: ");
     Serial.println(t2-t1);
+    Serial.print("Odom pose: ");
+    Serial.print(car.odomPose(0));
+    Serial.print(" ");
+    Serial.print(car.odomPose(1));
+    Serial.print(" ");
+    Serial.println(car.odomPose(2));
     // delay(1000);
 }

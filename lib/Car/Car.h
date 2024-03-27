@@ -8,35 +8,37 @@
 class Car
 {
 private:
-    unsigned long period;
+    unsigned long updatePeriod;
     unsigned long currentMillis;
     unsigned long previousMillis;
     unsigned long diff;
     unsigned int odomCounter;
-    float fi;
+
+    float wheelRadius;
+
     double dt;
     Matrix<3, 1, float> *desiredCarVelocity;
-    Matrix<3, 1, float> *feedbackCarPose;
-    Matrix<4, 4> G; // global transformation
-    Matrix<3, 1, float> vb;
-    Matrix<6, 1, float> vb6;
-    Matrix<4, 4, float> T;
-    // Matrix<3> q;
-    // Matrix<3> dqb;
-    // Matrix<3> dq;
-    // float fi_k;
-    Matrix<WHEELS_COUNT, 1, float> wheelsVel;
-    Matrix<3, 3, float> R_fi;
-    Matrix<4, 3, float> H_0;
-    Matrix<3, 4, float> F;
-    Matrix<WHEELS_COUNT, 1, float> wheelsDisplacement;
+    Matrix<WHEELS_COUNT, 1, float> *jointAngles;
+    Matrix<WHEELS_COUNT, 1, float> *jointVelocities;
 
-    void findCarPose(); // forward kinematics
+    Matrix<WHEELS_COUNT, 1, float> lastJointAngles;
+
+    Matrix<4, 3, float> Jac;
+    Matrix<3, 4, float> invJac;
+
+    // For odometry estimation
+    Matrix<6, 1, float> vb6;
+    Matrix<4, 4, float> currentTf;
+    Matrix<4, 4, float> displacementTf;
+
+
+    void estimateOdomPose(); // forward kinematics
     void reachCarVelocity(Matrix<3, 1, float> &carVel); // inverse kinematics
     void reachWheelsAngularVelocity(Matrix<WHEELS_COUNT, 1, float> &wheelsVel);
 
 public:
     Wheel * wheels[WHEELS_COUNT];
+    Matrix<3, 1, float> odomPose;
 
     Car(
         float w,
@@ -44,9 +46,12 @@ public:
         float r,
         unsigned long wheelPeriod,
         Matrix<3, 1, float> *desiredVelocity,
-        Matrix<3, 1, float> *feedbackPose);
+        Matrix<4, 1, float> *jointAngles,
+        Matrix<4, 1, float> *jointVelocities);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);
-    void setMotorsPWM(Matrix<WHEELS_COUNT, 1, int> &motorsPwm);
+    void setMotorsPWM(Matrix<WHEELS_COUNT, 1, float> &motorsPwm);
     void update();
+    void resetOdom();
+
 };

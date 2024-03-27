@@ -1,75 +1,53 @@
 #include "SerialTransceiver.h"
 
-SerialTransceiver::SerialTransceiver(Matrix<3> *desired, Matrix<3> *feedback)
-    : desiredVelocity(desired), feedbackPose(feedback)
+SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities)
+    :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities)
 {
     maxAngSpeed = 5;
     maxLinSpeed = 0.85;
     threshold = 0.0001;
+
+    bufferOutSize = (jointVelocities->Rows+jointAngles->Rows)*sizeof(float)+2;
+    stateVector = new float[jointVelocities->Rows+jointAngles->Rows]();
+
+    bufferInSize = (desiredVelocity->Rows)*sizeof(float)+2;
+    controlVector = new float[desiredVelocity->Rows]();
+    
+    bufferIn = new uint8_t[bufferInSize]();
 }
 
 void SerialTransceiver::rx()
 {
     // Get message
     int bytesRead = 0;
-    while (bytesRead < 5)
+    while (bytesRead < bufferInSize)
     {
         if (Serial.available())
         {
-            buffer[bytesRead] = Serial.read();
+            bufferIn[bytesRead] = Serial.read();
             bytesRead++;
         }
     }
 
     //Get vector
-    if (buffer[4] == '\n')
+    if (bufferIn[bufferInSize-1] == '\n')
     {
-        memcpy(controlVec, buffer, 3);
-        readChecksum = buffer[3];
-        calcChecksum = crc8((uint8_t *)controlVec, 3);
+        memcpy(controlVector, bufferIn, bufferInSize-2);
+        readChecksum = bufferIn[bufferInSize-2];
+        calcChecksum = crc8((uint8_t *)controlVector, bufferInSize-2);
         if (readChecksum == calcChecksum)
         {
-            if (controlVec[0] == 127)
-            {
-                fi = 0;
-            }
-            else
-            {
-                fi = mapUint8ToFloat(controlVec[0], -maxAngSpeed, maxAngSpeed);
-            }
-
-            if (controlVec[1] == 127)
-            {
-                x = 0;
-            }
-            else
-            {
-                x = mapUint8ToFloat(controlVec[1], -maxLinSpeed, maxLinSpeed);
-            }
-
-            if (controlVec[2] == 127)
-            {
-                y = 0;
-            }
-            else
-            {
-                y = mapUint8ToFloat(controlVec[2], -maxLinSpeed, maxLinSpeed);
-            }
-            // if (abs(fi) <= threshold) fi = 0;
-            // if (abs(x) <= threshold) x = 0;
-            // if (abs(y) <= threshold) y = 0;
-            (*desiredVelocity)(0) = fi;
-            (*desiredVelocity)(1) = x;
-            (*desiredVelocity)(2) = y;
-            // memcpy(desiredVelocity, vec, 12);
+            memcpy(desiredVelocity->storage, controlVector, desiredVelocity->Rows*sizeof(float));
         }
     }
 }
 
 void SerialTransceiver::tx()
 {
-    calcChecksum = crc8((uint8_t *)feedbackPose, 12);
-    Serial.write((byte *)feedbackPose, 12);
+    memcpy(stateVector, jointAngles->storage, jointAngles->Rows*sizeof(float));
+    memcpy(&(stateVector[jointAngles->Rows]), jointVelocities->storage, jointVelocities->Rows*sizeof(float));
+    calcChecksum = crc8((uint8_t *)stateVector, bufferOutSize-2);
+    Serial.write((byte *)stateVector, bufferOutSize-2);
     Serial.write(&calcChecksum, 1);
     Serial.write('\n');
     // Serial.flush(); // waits for the transmission to complete

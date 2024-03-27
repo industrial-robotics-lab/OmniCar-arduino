@@ -45,6 +45,7 @@ public:
   float getPidOutput();
   float getSendedPWM();
 
+  float getCurrentAngle();
   float getCurrentAngularVelocity();
 
   int getEncPinA();

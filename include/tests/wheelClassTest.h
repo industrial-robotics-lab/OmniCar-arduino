@@ -48,7 +48,7 @@ void updateDesired()
     }
     else
     {
-      desiredAngularVelocity = 1.0;
+      desiredAngularVelocity = 0.5;
     }
 
     // desiredAngularVelocity = random(-100, 100) / 100.0;
@@ -64,6 +64,8 @@ void sendData()
   // Serial.print(w.getPidOutput() / 255); // range from [-255; 255] to [-1; 1] for good scale on plot
   Serial.print(' ');
   Serial.print(w.getCurrentAngularVelocity());
+  Serial.print(' ');
+  Serial.print(w.getCurrentAngle());
   Serial.print(' ');
   Serial.print(w.getPidOutput());
   Serial.print(' ');
