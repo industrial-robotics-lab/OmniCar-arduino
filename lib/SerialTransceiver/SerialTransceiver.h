@@ -9,10 +9,6 @@ using namespace BLA;
 class SerialTransceiver
 {
 private:
-    float maxLinSpeed;
-    float maxAngSpeed;
-    float threshold;
-    float fi, x, y;
 
     Matrix<3> *desiredVelocity;
     Matrix<4> *jointAngles;

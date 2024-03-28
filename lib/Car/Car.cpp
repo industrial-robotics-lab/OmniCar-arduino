@@ -29,7 +29,7 @@ Car::Car(
     float ilw = 1.0 / lw;
     Jac = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
     Jac /= wheelRadius;
-    invJac = {ilw, -ilw, -ilw, ilw,-1, -1, -1, -1, 1, -1, 1, -1};
+    invJac = {-ilw, ilw, ilw, -ilw, 1, 1, 1, 1, -1, 1, -1, 1};
     invJac *= wheelRadius / 4;
     
     resetOdom();
@@ -69,6 +69,14 @@ void Car::setMotorsPWM(Matrix<WHEELS_COUNT, 1, float> &motorsPWM)
 
 void Car::reachCarVelocity(Matrix<3,1, float> &carVel)
 {
+    if(abs(carVel(0))>0.75){
+        carVel(0) = copysignf(0.5, carVel(0));
+    }
+    for(uint8_t i = 1; i<3; i++){
+        if(abs(carVel(i))>0.5){
+            carVel(i) = copysignf(0.5, carVel(i));
+        }
+    }
     *jointVelocities = Jac * carVel;
     reachWheelsAngularVelocity(*jointVelocities);
 }

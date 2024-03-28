@@ -3,9 +3,6 @@
 SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities)
     :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities)
 {
-    maxAngSpeed = 5;
-    maxLinSpeed = 0.85;
-    threshold = 0.0001;
 
     bufferOutSize = (jointVelocities->Rows+jointAngles->Rows)*sizeof(float)+2;
     stateVector = new float[jointVelocities->Rows+jointAngles->Rows]();
