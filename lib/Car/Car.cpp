@@ -10,11 +10,13 @@ Car::Car(
     unsigned long updatePeriod,
     Matrix<3,1, float> *desiredVelocity,
     Matrix<4,1, float> *jointAngles,
-    Matrix<4,1, float> *jointVelocities
+    Matrix<4,1, float> *jointVelocities,
+    Matrix<3,1, float> *odomPose
 ) : updatePeriod(updatePeriod),
       desiredCarVelocity(desiredVelocity),
       jointAngles(jointAngles),
       jointVelocities(jointVelocities),
+      odomPose(odomPose),
       wheelRadius(r)
 {
     *(wheels + 0) = new Wheel(1, ENC_MOTOR1_PINA, ENC_MOTOR1_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
@@ -27,10 +29,10 @@ Car::Car(
 
     float lw = l + w;
     float ilw = 1.0 / lw;
-    Jac = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
-    Jac /= wheelRadius;
-    invJac = {-ilw, ilw, ilw, -ilw, 1, 1, 1, 1, -1, 1, -1, 1};
-    invJac *= wheelRadius / 4;
+    invJac = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
+    invJac /= wheelRadius;
+    Jac = {-ilw, ilw, ilw, -ilw, 1, 1, 1, 1, -1, 1, -1, 1};
+    Jac *= wheelRadius / 4;
     
     resetOdom();
 }
@@ -48,16 +50,18 @@ void Car::estimateOdomPose()
 {
     Matrix<4,1, float> jointsAngleDisplacement;
     Matrix<3,1, float> cartPoseDisplacement;
-    jointsAngleDisplacement = *jointAngles - lastJointAngles;
+    jointsAngleDisplacement = {(*jointAngles)(0) - lastJointAngles(0), (*jointAngles)(1) - lastJointAngles(1), (*jointAngles)(2) - lastJointAngles(2), (*jointAngles)(3) - lastJointAngles(3) };
+   
 
-    cartPoseDisplacement = invJac*jointsAngleDisplacement;
-    vb6(5) = cartPoseDisplacement(0);
-    vb6(0) = cartPoseDisplacement(1);
-    vb6(1) = cartPoseDisplacement(2);
+    cartPoseDisplacement = Jac*jointsAngleDisplacement;
+    vb6(2) = cartPoseDisplacement(0);
+    vb6(3) = cartPoseDisplacement(1);
+    vb6(4) = cartPoseDisplacement(2);
     displacementTf = vec6_to_SE3(vb6);
     currentTf *= displacementTf;
     // *feedbackCarPose = {atan2(G(1, 0), G(0, 0)), G(0, 3), G(1, 3)};
-    odomPose = {atan2(currentTf(1, 0), -currentTf(0, 0)), currentTf(1), currentTf(2)};
+    // odomPose = {cartPoseDisplacement(0), cartPoseDisplacement(1), cartPoseDisplacement(2)};
+    *odomPose = {atan2(currentTf(1, 0), currentTf(0, 0)), -currentTf(0, 3), currentTf(1, 3)};;
 }
 
 void Car::setMotorsPWM(Matrix<WHEELS_COUNT, 1, float> &motorsPWM)
@@ -77,7 +81,7 @@ void Car::reachCarVelocity(Matrix<3,1, float> &carVel)
             carVel(i) = copysignf(0.5, carVel(i));
         }
     }
-    *jointVelocities = Jac * carVel;
+    *jointVelocities = invJac * carVel;
     reachWheelsAngularVelocity(*jointVelocities);
 }
 
@@ -100,7 +104,7 @@ void Car::reachWheelsAngularVelocity(Matrix<WHEELS_COUNT, 1, float> & wheelsVel)
 
 void Car::resetOdom(){
     currentTf = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-    odomPose.Fill(0);
+    (*odomPose).Fill(0);
 }
 
 void Car::update()

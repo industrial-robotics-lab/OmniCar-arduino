@@ -13,6 +13,7 @@ private:
     Matrix<3> *desiredVelocity;
     Matrix<4> *jointAngles;
     Matrix<4> *jointVelocities;
+    Matrix<3> *odomPose;
 
     float *stateVector;
     uint8_t bufferOutSize;
@@ -27,6 +28,6 @@ private:
     void tx();
 
 public:
-    SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities);
+    SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities, Matrix<3> *odomPose);
     void talk();
 };

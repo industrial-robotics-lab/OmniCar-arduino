@@ -7,8 +7,9 @@
 Matrix<3> desiredCarVelocity;
 Matrix<4> jointAngles;
 Matrix<4> jointVelocities;
+Matrix<3> odomPose;
 
-Car car(WHEELBASE_LENGTH / 2, WHEELBASE_WIDTH / 2, OMNIWHEEL_DIAMETER / 2, UPDATE_STATE_DT_MS, &desiredCarVelocity, &jointAngles, &jointVelocities);
+Car car(WHEELBASE_LENGTH / 2, WHEELBASE_WIDTH / 2, OMNIWHEEL_DIAMETER / 2, UPDATE_STATE_DT_MS, &desiredCarVelocity, &jointAngles, &jointVelocities, &odomPose);
 void updateW1A() { car.wheels[0]->triggerA(); }
 void updateW1B() { car.wheels[0]->triggerB(); }
 void updateW2A() { car.wheels[1]->triggerA(); }
@@ -18,7 +19,7 @@ void updateW3B() { car.wheels[2]->triggerB(); }
 void updateW4A() { car.wheels[3]->triggerA(); }
 void updateW4B() { car.wheels[3]->triggerB(); }
 
-SerialTransceiver transceiver(&desiredCarVelocity, &jointAngles, &jointVelocities);
+SerialTransceiver transceiver(&desiredCarVelocity, &jointAngles, &jointVelocities, &odomPose);
 
 Thread carThread = Thread();
 Thread serialThread = Thread();

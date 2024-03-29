@@ -1,11 +1,11 @@
 #include "SerialTransceiver.h"
 
-SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities)
-    :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities)
+SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities, Matrix<3> *odomPose)
+    :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities), odomPose(odomPose)
 {
 
     bufferOutSize = (jointVelocities->Rows+jointAngles->Rows)*sizeof(float)+2;
-    stateVector = new float[jointVelocities->Rows+jointAngles->Rows]();
+    stateVector = new float[jointVelocities->Rows+jointAngles->Rows + odomPose->Rows]();
 
     bufferInSize = (desiredVelocity->Rows)*sizeof(float)+2;
     controlVector = new float[desiredVelocity->Rows]();
@@ -43,6 +43,7 @@ void SerialTransceiver::tx()
 {
     memcpy(stateVector, jointAngles->storage, jointAngles->Rows*sizeof(float));
     memcpy(&(stateVector[jointAngles->Rows]), jointVelocities->storage, jointVelocities->Rows*sizeof(float));
+    memcpy(&(stateVector[jointAngles->Rows+jointVelocities->Rows]), odomPose->storage, odomPose->Rows*sizeof(float));
     calcChecksum = crc8((uint8_t *)stateVector, bufferOutSize-2);
     Serial.write((byte *)stateVector, bufferOutSize-2);
     Serial.write(&calcChecksum, 1);

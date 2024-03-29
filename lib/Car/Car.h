@@ -12,7 +12,6 @@ private:
     unsigned long currentMillis;
     unsigned long previousMillis;
     unsigned long diff;
-    unsigned int odomCounter;
 
     float wheelRadius;
 
@@ -20,11 +19,12 @@ private:
     Matrix<3, 1, float> *desiredCarVelocity;
     Matrix<WHEELS_COUNT, 1, float> *jointAngles;
     Matrix<WHEELS_COUNT, 1, float> *jointVelocities;
+    Matrix<3, 1, float>  *odomPose;
 
     Matrix<WHEELS_COUNT, 1, float> lastJointAngles;
 
-    Matrix<4, 3, float> Jac;
-    Matrix<3, 4, float> invJac;
+    Matrix<3, 4, float> Jac;
+    Matrix<4, 3, float> invJac;
 
     // For odometry estimation
     Matrix<6, 1, float> vb6;
@@ -38,7 +38,6 @@ private:
 
 public:
     Wheel * wheels[WHEELS_COUNT];
-    Matrix<3, 1, float> odomPose;
 
     Car(
         float w,
@@ -47,7 +46,8 @@ public:
         unsigned long wheelPeriod,
         Matrix<3, 1, float> *desiredVelocity,
         Matrix<4, 1, float> *jointAngles,
-        Matrix<4, 1, float> *jointVelocities);
+        Matrix<4, 1, float> *jointVelocities,
+        Matrix<3, 1, float> *odomPose);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);
     void setMotorsPWM(Matrix<WHEELS_COUNT, 1, float> &motorsPwm);

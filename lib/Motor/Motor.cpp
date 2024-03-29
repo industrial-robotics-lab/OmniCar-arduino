@@ -14,9 +14,9 @@ void Motor::setMotorControl(float control) {
     unclipedPWM= control*(255-pwm_moving_threshold) + copysign(pwm_moving_threshold, control);
   }
   sendedPWM = constrain(unclipedPWM, -255, 255);
-  if (sendedPWM == 0) {
-    motor->run(RELEASE);
+  if (abs(sendedPWM)<pwm_moving_threshold+3) {
     motor->setSpeed(0);
+    motor->run(RELEASE);
   } else if (sendedPWM > 0) {
     motor->run(FORWARD);
     motor->setSpeed(abs(sendedPWM));

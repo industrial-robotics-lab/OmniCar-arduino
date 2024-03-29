@@ -18,6 +18,6 @@
 #define ENC_MOTOR4_PINB 19
 
 // PID_PARAMETERS
-#define WHEEL_KP 0.22
-#define WHEEL_KI 0.075
-#define WHEEL_KD 0.002
+#define WHEEL_KP 0.25
+#define WHEEL_KI 0.05
+#define WHEEL_KD 0.001
