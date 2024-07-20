@@ -4,7 +4,7 @@ SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *join
     :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities), odomPose(odomPose)
 {
 
-    bufferOutSize = (jointVelocities->Rows+jointAngles->Rows)*sizeof(float)+2;
+    bufferOutSize = (jointVelocities->Rows+jointAngles->Rows+odomPose->Rows)*sizeof(float)+2;
     stateVector = new float[jointVelocities->Rows+jointAngles->Rows + odomPose->Rows]();
 
     bufferInSize = (desiredVelocity->Rows)*sizeof(float)+2;
