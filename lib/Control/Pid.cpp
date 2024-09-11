@@ -20,7 +20,7 @@ void PID::update(float desiredValue, float currentValue){
     }
     // Using Lagrange 3-order polinomial 
     dError = 1.0/(2.0*dt)*(lastlastError - 4.0*lastError + 3.0*currentError);
-    if (abs(currentError)<1.0e-5){
+    if (abs(currentError)<1.0e-7){
         integralValue = 0.0;
     }
     unclippedOutput = kP*currentError;
