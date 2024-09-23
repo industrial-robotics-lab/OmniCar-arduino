@@ -52,7 +52,7 @@ float Wheel::reachAngularVelocity(float desiredAngularVelocity, float dt)
     lastlastAngle = lastAngle;
     lastAngle = currentAngle;
     // Using Lagrange 3-order polinomial  interpolation
-    currentAngularVelocity = 1.0/(2.0*dt)*(lastlastAngle - 4.0*lastAngle + 3.0*currentAngle);;
+    currentAngularVelocity = 1.0/(2.0*dt)*(lastlastAngle - 4.0*lastAngle + 3.0*currentAngle);
     pid->update(desiredAngularVelocity, currentAngularVelocity);
     pidOutput = pid->output;
     motor->setMotorControl(pidOutput);

@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <BasicLinearAlgebra.h>
+#include <Car.h>
 #include "omnimath.h"
 
 using namespace BLA;
@@ -11,8 +12,8 @@ class SerialTransceiver
 private:
 
     Matrix<3> *desiredVelocity;
-    Matrix<4> *jointAngles;
-    Matrix<4> *jointVelocities;
+    Matrix<WHEELS_COUNT> *jointAngles;
+    Matrix<WHEELS_COUNT> *jointVelocities;
     Matrix<3> *odomPose;
 
     float *stateVector;
@@ -28,6 +29,6 @@ private:
     void tx();
 
 public:
-    SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities, Matrix<3> *odomPose);
+    SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<WHEELS_COUNT> *jointAngles, Matrix<WHEELS_COUNT> *jointVelocities, Matrix<3> *odomPose);
     void talk();
 };

@@ -2,7 +2,7 @@
 #include "omnimath.h"
 
 
-Matrix<6> vec6 = {1,2,3,4,5,6};
+Matrix<6> vec6 = {1,0,0,0,0,0};
 double delta;
 
 void setup() {

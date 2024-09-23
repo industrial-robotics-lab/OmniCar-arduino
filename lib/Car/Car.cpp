@@ -9,8 +9,8 @@ Car::Car(
     float r,
     unsigned long updatePeriod,
     Matrix<3,1, float> *desiredVelocity,
-    Matrix<4,1, float> *jointAngles,
-    Matrix<4,1, float> *jointVelocities,
+    Matrix<WHEELS_COUNT, 1, float> *jointAngles,
+    Matrix<WHEELS_COUNT, 1, float> *jointVelocities,
     Matrix<3,1, float> *odomPose
 ) : updatePeriod(updatePeriod),
       desiredCarVelocity(desiredVelocity),
@@ -19,20 +19,15 @@ Car::Car(
       odomPose(odomPose),
       wheelRadius(r)
 {
-    *(wheels + 0) = new Wheel(1, ENC_MOTOR1_PINA, ENC_MOTOR1_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
-    *(wheels + 1) = new Wheel(2, ENC_MOTOR2_PINA, ENC_MOTOR2_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
-    *(wheels + 2) = new Wheel(3, ENC_MOTOR3_PINA, ENC_MOTOR3_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
-    *(wheels + 3) = new Wheel(4, ENC_MOTOR4_PINA, ENC_MOTOR4_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
+    *(wheels + 0) = new Wheel(3, ENC_MOTOR3_PINA, ENC_MOTOR3_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
+    *(wheels + 1) = new Wheel(4, ENC_MOTOR4_PINA, ENC_MOTOR4_PINB, true, WHEEL_KP, WHEEL_KI, WHEEL_KD, UPDATE_STATE_DT_MS/1000.0);
     
     vb6.Fill(0);
     currentTf = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
-    float lw = l + w;
-    float ilw = 1.0 / lw;
-    invJac = {-lw, 1, -1, lw, 1, 1, lw, 1, -1, -lw, 1, 1};
-    invJac /= wheelRadius;
-    Jac = {-ilw, ilw, ilw, -ilw, 1, 1, 1, 1, -1, 1, -1, 1};
-    Jac *= wheelRadius / 4;
+    Jac = {-r / w, r / w, r / 2, r / 2, 0, 0};
+    invJac = {-w / r, 2 / r, 0, w / r, 2 /r, 0};
+    invJac /= (float) 2;
     
     resetOdom();
 }
@@ -48,9 +43,9 @@ void Car::setDesiredVelocity(float vFi, float vX, float vY)
 
 void Car::estimateOdomPose()
 {
-    Matrix<4,1, float> jointsAngleDisplacement;
+    Matrix<WHEELS_COUNT,1, float> jointsAngleDisplacement;
     Matrix<3,1, float> cartPoseDisplacement;
-    jointsAngleDisplacement = {(*jointAngles)(0) - lastJointAngles(0), (*jointAngles)(1) - lastJointAngles(1), (*jointAngles)(2) - lastJointAngles(2), (*jointAngles)(3) - lastJointAngles(3) };
+    jointsAngleDisplacement = {(*jointAngles)(0) - lastJointAngles(0), (*jointAngles)(1) - lastJointAngles(1)};
    
 
     cartPoseDisplacement = Jac*jointsAngleDisplacement;
@@ -73,8 +68,8 @@ void Car::setMotorsPWM(Matrix<WHEELS_COUNT, 1, float> &motorsPWM)
 
 void Car::reachCarVelocity(Matrix<3,1, float> &carVel)
 {
-    if(abs(carVel(0))>0.75){
-        carVel(0) = copysignf(0.5, carVel(0));
+    if(abs(carVel(0))>4){
+        carVel(0) = copysignf(4, carVel(0));
     }
     for(uint8_t i = 1; i<3; i++){
         if(abs(carVel(i))>0.5){

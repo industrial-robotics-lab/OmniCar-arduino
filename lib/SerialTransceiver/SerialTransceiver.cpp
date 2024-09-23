@@ -1,10 +1,10 @@
 #include "SerialTransceiver.h"
 
-SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities, Matrix<3> *odomPose)
+SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<WHEELS_COUNT> *jointAngles, Matrix<WHEELS_COUNT> *jointVelocities, Matrix<3> *odomPose)
     :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities), odomPose(odomPose)
 {
 
-    bufferOutSize = (jointVelocities->Rows+jointAngles->Rows)*sizeof(float)+2;
+    bufferOutSize = (jointVelocities->Rows+jointAngles->Rows+ odomPose->Rows)*sizeof(float)+2;
     stateVector = new float[jointVelocities->Rows+jointAngles->Rows + odomPose->Rows]();
 
     bufferInSize = (desiredVelocity->Rows)*sizeof(float)+2;

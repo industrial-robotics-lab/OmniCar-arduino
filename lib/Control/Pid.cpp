@@ -14,16 +14,16 @@ void PID::update(float desiredValue, float currentValue){
     lastlastError = lastError;
     lastError = currentError;
     currentError = desiredValue - currentValue;
-    integralValue += (currentError+lastError)/2.0*dt*kI;
-    if(maxIntegralValue != -1){
-        integralValue = constrain(integralValue, -maxIntegralValue, maxIntegralValue);
-    }
+    integralValue += currentError*dt;
+    // if(maxIntegralValue != -1){
+    //     integralValue = constrain(integralValue, -maxIntegralValue, maxIntegralValue);
+    // }
     // Using Lagrange 3-order polinomial 
-    dError = 1.0/(2.0*dt)*(lastlastError - 4.0*lastError + 3.0*currentError);
-    if (abs(currentError)<1.0e-5){
-        integralValue = 0.0;
-    }
-    unclippedOutput = kP*currentError;
+    dError =  1.0/(2.0*dt)*(lastlastError - 4.0*lastError + 3.0*currentError);
+    // if (abs(currentError)<1.0e-7){
+    //     integralValue = 0.0;
+    // }
+    unclippedOutput = kP*currentError + kI*integralValue + kD*dError;
     output = constrain(unclippedOutput, minOutput, maxOutput);
 }
 

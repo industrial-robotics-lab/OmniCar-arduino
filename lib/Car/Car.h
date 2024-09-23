@@ -3,7 +3,7 @@
 #include "Wheel.h"
 #include "omnimath.h"
 
-#define WHEELS_COUNT 4
+#define WHEELS_COUNT 2
 
 class Car
 {
@@ -23,8 +23,8 @@ private:
 
     Matrix<WHEELS_COUNT, 1, float> lastJointAngles;
 
-    Matrix<3, 4, float> Jac;
-    Matrix<4, 3, float> invJac;
+    Matrix<3, WHEELS_COUNT, float> Jac;
+    Matrix<WHEELS_COUNT, 3, float> invJac;
 
     // For odometry estimation
     Matrix<6, 1, float> vb6;
@@ -45,8 +45,8 @@ public:
         float r,
         unsigned long wheelPeriod,
         Matrix<3, 1, float> *desiredVelocity,
-        Matrix<4, 1, float> *jointAngles,
-        Matrix<4, 1, float> *jointVelocities,
+        Matrix<WHEELS_COUNT, 1, float> *jointAngles,
+        Matrix<WHEELS_COUNT, 1, float> *jointVelocities,
         Matrix<3, 1, float> *odomPose);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);

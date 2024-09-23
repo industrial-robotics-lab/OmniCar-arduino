@@ -1,2 +1,12 @@
 .pio
 .vscode
+record.py
+arduino.sh
+/lib/DebugTool
+
+include/tests/pidTest.h
+include/tests/motorTest.h
+include/tests/sensorsCheck.h
+include/tests/solution.h
+include/tests/solutionTest.h
+include/tests/ultrasonicTest.h

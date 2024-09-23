@@ -1,11 +1,11 @@
 #pragma once
 // COMMON PARAMETERS
-#define UPDATE_STATE_DT_MS 20
+#define UPDATE_STATE_DT_MS 10
 
 // CAR KINEMATIC PARAMETERS
 #define WHEELBASE_LENGTH 175.0 / 1000     // mm to m by x-axis
 #define WHEELBASE_WIDTH 165.0 / 1000 // mm to m by y-axis
-#define OMNIWHEEL_DIAMETER 60.0 / 1000   // mm to m
+#define OMNIWHEEL_DIAMETER 65.0 / 1000   // mm to m
 
 // ENC_MOTORODERS SETTINGS
 #define ENC_MOTOR1_PINA 51
@@ -18,6 +18,6 @@
 #define ENC_MOTOR4_PINB 19
 
 // PID_PARAMETERS
-#define WHEEL_KP 0.25
-#define WHEEL_KI 0.05
-#define WHEEL_KD 0.001
+#define WHEEL_KP 0.1
+#define WHEEL_KI 0.0
+#define WHEEL_KD 0.0
