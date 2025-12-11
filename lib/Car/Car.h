@@ -19,6 +19,7 @@ private:
     Matrix<3, 1, float> *desiredCarVelocity;
     Matrix<WHEELS_COUNT, 1, float> *jointAngles;
     Matrix<WHEELS_COUNT, 1, float> *jointVelocities;
+    Matrix<WHEELS_COUNT, 1, float> *jointTicks;
     Matrix<3, 1, float>  *odomPose;
 
     Matrix<WHEELS_COUNT, 1, float> lastJointAngles;
@@ -47,6 +48,7 @@ public:
         Matrix<3, 1, float> *desiredVelocity,
         Matrix<4, 1, float> *jointAngles,
         Matrix<4, 1, float> *jointVelocities,
+        Matrix<4, 1, float> *jointTicks,
         Matrix<3, 1, float> *odomPose);
     ~Car();
     void setDesiredVelocity(float vX, float vY, float vTheta);

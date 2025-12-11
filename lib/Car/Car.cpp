@@ -11,11 +11,13 @@ Car::Car(
     Matrix<3,1, float> *desiredVelocity,
     Matrix<4,1, float> *jointAngles,
     Matrix<4,1, float> *jointVelocities,
+    Matrix<4,1, float> *jointTicks,
     Matrix<3,1, float> *odomPose
 ) : updatePeriod(updatePeriod),
       desiredCarVelocity(desiredVelocity),
       jointAngles(jointAngles),
       jointVelocities(jointVelocities),
+      jointTicks(jointTicks),
       odomPose(odomPose),
       wheelRadius(r)
 {
@@ -96,7 +98,9 @@ void Car::reachWheelsAngularVelocity(Matrix<WHEELS_COUNT, 1, float> & wheelsVel)
         for(uint8_t wi = 0; wi < WHEELS_COUNT; wi++){
             lastJointAngles(wi) = (*jointAngles)(wi);
             (*jointAngles)(wi) = wheels[wi]->getCurrentAngle();
-            (*jointVelocities)(wi) += wheels[wi]->reachAngularVelocity(wheelsVel(wi), dt);
+            (*jointTicks)(wi) = wheels[wi]->getTicks();
+            // (*jointVelocities)(wi) += wheels[wi]->reachAngularVelocity(wheelsVel(wi), dt);
+            wheels[wi]->reachAngularVelocity(wheelsVel(wi), dt);
         }
         estimateOdomPose();
     }
@@ -109,5 +113,6 @@ void Car::resetOdom(){
 
 void Car::update()
 {
-    reachCarVelocity(*desiredCarVelocity);
+    // Direct wheel velocity control - skip inverse kinematics
+    reachWheelsAngularVelocity(*jointVelocities);
 }

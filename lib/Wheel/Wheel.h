@@ -3,6 +3,7 @@
 #include "Motor.h"
 #include "Encoder.h"
 #include <Pid.h>
+#include <config.h>
 
 class Wheel
 {
@@ -22,7 +23,10 @@ private:
   unsigned long currentMillis = 0;
   unsigned long previousMillis = 0;
 
-public:
+public: 
+  void setPID(double kp, double ki, double kd);
+  void resetPID();
+  
   long ticks; // make private
 
   Wheel(
@@ -30,9 +34,9 @@ public:
     unsigned int encPinA,
     unsigned int encPinB,
     bool isClockwise,
-    double kP = 1.0,
-    double kI = 0.0,
-    double kD = 0.0,
+    double kP = WHEEL_KP,
+    double kI = WHEEL_KI,
+    double kD = WHEEL_KD,
     double dt = 0.05
   );
   ~Wheel();
@@ -47,6 +51,7 @@ public:
 
   float getCurrentAngle();
   float getCurrentAngularVelocity();
+  long getTicks();
 
   int getEncPinA();
   int getEncPinB();

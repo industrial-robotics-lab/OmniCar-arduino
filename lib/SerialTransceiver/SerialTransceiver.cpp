@@ -1,54 +1,90 @@
 #include "SerialTransceiver.h"
 
-SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities, Matrix<3> *odomPose)
-    :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities), odomPose(odomPose)
+SerialTransceiver::SerialTransceiver(Matrix<3> *desiredVelocity, Matrix<4> *jointAngles, Matrix<4> *jointVelocities, Matrix<4> *jointTicks, Matrix<3> *odomPose)
+    :desiredVelocity(desiredVelocity), jointAngles(jointAngles), jointVelocities(jointVelocities), jointTicks(jointTicks), odomPose(odomPose)
 {
-
-    bufferOutSize = (jointVelocities->Rows+jointAngles->Rows+odomPose->Rows)*sizeof(float)+2;
-    stateVector = new float[jointVelocities->Rows+jointAngles->Rows + odomPose->Rows]();
-
-    bufferInSize = (desiredVelocity->Rows)*sizeof(float)+2;
-    controlVector = new float[desiredVelocity->Rows]();
-    
-    bufferIn = new uint8_t[bufferInSize]();
+    // Text-based protocol, no buffers needed
 }
 
 void SerialTransceiver::rx()
 {
-    // Get message
-    int bytesRead = 0;
-    while (bytesRead < bufferInSize)
+    if (!Serial.available())
+        return;
+
+    String line = Serial.readStringUntil('\n');
+    line.trim();  // Remove whitespace and \r
+
+    if (line.length() == 0)
+        return;
+
+    // DEBUG: see what we got
+    Serial.print("RX_LINE: '");
+    Serial.print(line);
+    Serial.println("'");
+
+    if (!line.startsWith("SET "))
+        return;
+
+    // Copy to a plain C string for strtok/atof
+    char buf[64];
+    line.toCharArray(buf, sizeof(buf));
+    buf[sizeof(buf) - 1] = '\0';
+
+    // Tokenize: "SET v_fl v_fr v_rr v_rl"
+    char *token = strtok(buf, " ");  // first token ("SET")
+    if (!token || strcmp(token, "SET") != 0)
+        return;
+
+    float v[4] = {0, 0, 0, 0};
+
+    for (int i = 0; i < 4; ++i)
     {
-        if (Serial.available())
+        token = strtok(nullptr, " ");
+        if (!token)
         {
-            bufferIn[bytesRead] = Serial.read();
-            bytesRead++;
+            // missing value → abort
+            Serial.println("PARSE ERROR: missing values");
+            return;
         }
+        v[i] = atof(token);
     }
 
-    //Get vector
-    if (bufferIn[bufferInSize-1] == '\n')
+    // DEBUG
+    Serial.print("PARSED: [");
+    Serial.print(v[0]); Serial.print(", ");
+    Serial.print(v[1]); Serial.print(", ");
+    Serial.print(v[2]); Serial.print(", ");
+    Serial.print(v[3]); Serial.println("]");
+
+    // Optional sanity check – but don't use abs() on float, use fabsf
+    // if (fabsf(v[0]) < 100 && fabsf(v[1]) < 100 && fabsf(v[2]) < 100 && fabsf(v[3]) < 100)
     {
-        memcpy(controlVector, bufferIn, bufferInSize-2);
-        readChecksum = bufferIn[bufferInSize-2];
-        calcChecksum = crc8((uint8_t *)controlVector, bufferInSize-2);
-        if (readChecksum == calcChecksum)
-        {
-            memcpy(desiredVelocity->storage, controlVector, desiredVelocity->Rows*sizeof(float));
-        }
+        (*jointVelocities)(0, 0) = v[0];
+        (*jointVelocities)(1, 0) = v[1];
+        (*jointVelocities)(2, 0) = v[2];
+        (*jointVelocities)(3, 0) = v[3];
     }
 }
 
+
+
 void SerialTransceiver::tx()
 {
-    memcpy(stateVector, jointAngles->storage, jointAngles->Rows*sizeof(float));
-    memcpy(&(stateVector[jointAngles->Rows]), jointVelocities->storage, jointVelocities->Rows*sizeof(float));
-    memcpy(&(stateVector[jointAngles->Rows+jointVelocities->Rows]), odomPose->storage, odomPose->Rows*sizeof(float));
-    calcChecksum = crc8((uint8_t *)stateVector, bufferOutSize-2);
-    Serial.write((byte *)stateVector, bufferOutSize-2);
-    Serial.write(&calcChecksum, 1);
-    Serial.write('\n');
-    // Serial.flush(); // waits for the transmission to complete
+    long t_fl = (long)(*jointTicks)(0, 0);
+    long t_fr = (long)(*jointTicks)(1, 0);
+    long t_rr = (long)(*jointTicks)(2, 0);
+    long t_rl = (long)(*jointTicks)(3, 0);
+
+    // if (t_fl != 0 || t_fr != 0 || t_rr != 0 || t_rl != 0)
+    
+        Serial.print("ENC ");
+        Serial.print(t_fl);
+        Serial.print(" ");
+        Serial.print(t_fr);
+        Serial.print(" ");
+        Serial.print(t_rr);
+        Serial.print(" ");
+        Serial.println(t_rl);
 }
 
 void SerialTransceiver::talk()

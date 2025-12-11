@@ -70,5 +70,15 @@ float Wheel::getPidOutput() { return pidOutput; }
 float Wheel::getSendedPWM() { return motor->getSendedPWM(); }
 float Wheel::getCurrentAngularVelocity() { return currentAngularVelocity; }
 float Wheel::getCurrentAngle() { return encoder->getAngle(); }
+long Wheel::getTicks() { return encoder->getTicks(); }
 int Wheel::getEncPinA() { return encoder->getPinA(); }
 int Wheel::getEncPinB() { return encoder->getPinB(); }
+
+
+void Wheel::setPID(double kp, double ki, double kd) {
+    pid->setGains(kp, ki, kd);
+}
+
+void Wheel::resetPID() {
+    pid->reset();
+}

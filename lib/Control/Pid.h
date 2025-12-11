@@ -26,6 +26,13 @@ public:
     float output;
 
     PID(float kP, float kD = 0.0, float kI = 0.0, float dt = 0.05);
+
+    void setGains(float kp, float ki, float kd) {
+    kP = kp;
+    kI = ki;
+    kD = kd;
+    }
+
     void update(float desiredValue, float currentValue);
     void reset();
     void setOutputLimits(float min, float max);
